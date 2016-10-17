@@ -22,8 +22,6 @@ void setup_wifi() {
     Serial.print("Connecting to wifi network: ");
     Serial.println(ssid);
 
-    pinMode(A0, INPUT);
-
     WiFi.begin(ssid, password);
 
     while (WiFi.status() != WL_CONNECTED) {
@@ -65,6 +63,7 @@ void reconnect() {
 }
 
 void setup() {
+    pinMode(A0, INPUT);
     digitalWrite(13, LOW);
     delay(500);
     digitalWrite(13, HIGH);
