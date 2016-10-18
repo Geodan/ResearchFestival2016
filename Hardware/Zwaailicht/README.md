@@ -1,4 +1,6 @@
-# Turn the light  on-off
+Alarm light that can be turned on or off over internet using a NodeMCU V3 (LoLin) and a relais-module
+
+# Turn the light on-off
 ---
 ### MQTT Topic
 GOST/Datastreams(35)/Observations
