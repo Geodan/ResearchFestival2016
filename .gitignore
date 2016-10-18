@@ -1,1 +1,7 @@
 node_modules
+.pioenvs
+.clang_complete
+.gcc-flags.json
+.piolibdeps
+/Hardware/Zwaailicht/src/.travis.yml
+/Hardware/Zwaailicht/src/.gitignore
