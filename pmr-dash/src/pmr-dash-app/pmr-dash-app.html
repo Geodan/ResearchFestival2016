@@ -1,13 +1,26 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 
+<link rel="import" href="../dash-anne.html">
 <link rel="import" href="../dash-frans.html">
+<link rel="import" href="../dash-henk.html">
 <dom-module id="pmr-dash-app">
   <template>
     <style>
       :host {
         display: block;
       }
+      dash-anne {
+        max-width: 350px;
+      }
+      dash-henk {
+        max-width: 150px;
+      }
+      #content {
+        display: flex;
+
+      }
+      .card {margin: 5px;}
     </style>
     <paper-toolbar>
   <div class="title">Sensor dingen dash</div>
@@ -15,7 +28,11 @@
   <div class$="{{henk}}">Henk</div>
   <div class$="{{frans}}">Vrolijke Frans</div>
 </paper-toolbar>
-    <dash-frans></dash-frans>
+<div id="content" >
+    <dash-anne class="card" anne={{anne}}></dash-anne>
+     <dash-frans class="card" frans={{frans}}></dash-frans>
+     <dash-henk class="card"  henk={{henk}}></dash-henk>
+    </div>
   </template>
 
   <script>
@@ -24,18 +41,7 @@
       is: 'pmr-dash-app',
 
       properties: {
-        anne: {
-          type: String,
-          value: 'yellow'
-        },
-        henk: {
-          type: String,
-          value: 'orange'
-        },
-        frans: {
-          type: String,
-          value: 'green'
-        },
+        
       },
 
     });

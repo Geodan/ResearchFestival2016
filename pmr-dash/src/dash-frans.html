@@ -1,13 +1,95 @@
 <link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-frans">
+  <template>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="Datastreams(32)/Observations"
+            number-of-messages="Infinity"
+            last-message="{{lastMessageOne}}"
+            messages="{{messagesOne}}">
+        </mqtt-subscription>
+        <mqtt-subscription
+            topic="Datastreams(33)/Observations"
+            number-of-messages="Infinity"
+            last-message="{{lastMessageTwo}}"
+            messages="{{messagesTwo}}">
+        </mqtt-subscription>
+        <mqtt-subscription
+            topic="Datastreams(34)/Observations"
+            number-of-messages="Infinity"
+            last-message="{{lastMessageThree}}"
+            messages="{{messagesThree}}">
+        </mqtt-subscription>
+    </mqtt-connection>
 
+    <paper-card class="white" heading$="{{antwoord}}" image="style/frans.png" alt$="{{antwoord}}">
+  <div class="card-content" style="max-width: 250px;">
+   {{sensorOne}}, {{sensorTwo}}, {{sensorThree}}
+  </div>
+</paper-card>
+
+</template>
 <script>
   // register a new element called proto-element
   Polymer({
     is: "dash-frans",
-
+    properties: {
+        lastMessageOne: {
+            type: Object,
+            notify: true,
+            observer: '_messageOneChanged'
+        },
+        lastMessageTwo: {
+            type: Object,
+            notify: true,
+            observer: '_messageTwoChanged'
+        },
+        lastMessageThree: {
+            type: Object,
+            notify: true,
+            observer: '_messageThreeChanged'
+        },
+        frans: {
+            type: String,
+            value: 'red',
+            notify: true
+        }
+    },
     // add a callback to the element's prototype
     ready: function() {
-      this.textContent = "I'm a proto-element. Check out my prototype!"
+        this.antwoord = "water nodig";
+    },
+    _messageOneChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);
+        this.sensorOne = data.result;
+        this._calcDroog();
+    },
+    _messageTwoChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);
+        this.sensorTwo = data.result;
+        this._calcDroog();
+    },
+    _messageThreeChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);
+        this.sensorThree = data.result;
+        this._calcDroog();
+    },
+    _calcDroog: function(){
+        var treshold = 550;
+        var one = this.sensorOne?this.sensorOne:0;
+        var two = this.sensorTwo?this.sensorTwo:0;
+        var three = this.sensorThree?this.sensorThree:0;
+        if(one<treshold&&two<treshold&&three<treshold) {
+            this.antwoord = "geen water nodig";
+            this.frans = 'green';
+        }
+        else {
+            this.antwoord = "water nodig";
+            this.frans = 'red';
+        }
     }
   });
 </script>
+</dom-module>
