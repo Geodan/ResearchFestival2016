@@ -32,32 +32,29 @@
         },
         antwoord: {
             type: String,
-            value: 'Ergens'
+            value: 'Vrij'
         },
-        henk: {
-            type: String,
-            value: 'orange',
-            notify: true
-        }
+        
     },
     // add a callback to the element's prototype
     ready: function() {
-        this.toelichting = "Deze dienst is nog offline"
+        this.toelichting = "Ga je gang"
     },
     _messageChanged:function (msg) {
-        var a = Math.random()*3;
-        if (a<1) {
-            this.antwoord = "binnen";
-            this.toelichting = "Zijn auto is gezien";
+       var data = JSON.parse(msg);
+       if(data.reserved) {
+        //bezet
+        this.antwoord = 'bezet'
+        this.toelichting = "door iets"
+        if (data.description) {
+            this.toelichting = "met "+this.description;
         }
-        else if (a <2) {
-            this.antwoord = "buiten";
-            this.toelichting = "Zijn auto is niet op zijn plek";
-        }
-        else {
-            this.antwoord = "ergens";
-            this.toelichting = "Deze dienst is nog offline";
-        }
+       }
+       else {
+        //vrij
+        this.antwoord = 'vrij';
+        this.toelichting = "Ga je gang"
+       }
     }
   });
 </script>
