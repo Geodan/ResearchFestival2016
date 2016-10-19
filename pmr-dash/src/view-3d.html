@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/x3d-elements/x3d-viewer.html">
 <link rel="import" href="../bower_components/x3d-elements/x3d-layer.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <dom-module id="view-3d">
  <template>
  <style>
@@ -10,6 +11,16 @@
      height: 400px;
      }
   </style>
+  
+  <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="Datastreams(35)/Observations"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+  
 	<x3d-viewer 
 		 map={{map}} 
 		 headlight="1"
@@ -19,10 +30,16 @@
 		 <x3d-layer 
 			active=true 
 			map=[[map]]
-			on-loading='_loading'
-			on-loaded='_loaded'
 			url='http://research.geodan.nl/service/bgt3d' 
 			name='geodan_pk'
+			themeconfig=[[themeconfig]]
+			></x3d-layer>
+		<transform id='sensors_pk'></transform>
+		 <x3d-layer 
+			active=true 
+			map=[[map]]
+			url='http://research.geodan.nl/service/bgt3d' 
+			name='sensors_pk'
 			themeconfig=[[themeconfig]]
 			></x3d-layer>
 	</x3d-viewer>
@@ -34,6 +51,11 @@
 Polymer({
 	is: 'view-3d',
 	properties: {
+		lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        },
 		map: {
 			type: Object,
 			observer: '_mapChanged'
@@ -46,6 +68,7 @@ Polymer({
 					 materials: {
 					 	floor: {diffuseColor: 'salmon',transparency: '0'},
 						wall: {diffuseColor: 'ivory',transparency: '0.5'},
+						sensors_pk: {diffuseColor: 'red'},
 					 	geodan_pk: {diffuseColor: 'white',transparency: '0.3'},
 						building: {diffuseColor: 'salmon',transparency: '0'},
 						water: {specularColor: 'ivory', diffuseColor: 'powderblue', shininess: '1'},
@@ -68,6 +91,24 @@ Polymer({
 			}
 		}
 	},
+	_messageChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);
+        if(data.result) {
+        	this.zwaaien = window.setInterval(function(){
+        			d3.select('sphere')
+        				.transition().attr('radius',3)
+        				.transition().attr('radius',1);
+        	},1000);
+            //this.image = 'style/zwaaiaan.gif'
+        }
+        else {
+        	window.clearInterval(this.zwaaien);
+        	d3.select('sphere')
+        				.attr('radius',1)
+            //this.image='style/zwaaiuit.gif'
+        }
+
+    },
 	_mapChanged: function(map){
 		this._flyTo([122689, 483927]);
 		map.scene.select("#viewpoint").attr('zNear',1)
@@ -75,6 +116,15 @@ Polymer({
 			.attr('position','122738 483932 25')
 			.attr('orientation','0.5059 0.4662 0.7257 1.9445');
 		map.scene.select("navInfo").attr('speed',0.001).attr('transitionTime','1.0');
+		
+		var shape = map.scene.append('transform')
+			.attr('translation', function(d){
+					return '122690.10 483916.19 7';
+				}).append('shape');
+		shape.append('appearance').append('material').classed('material', true).attr('emissiveColor',"red");
+		shape.append('sphere')
+				.attr('radius',3);
+				//.attr('size','0.3 0.3 0.1');
 	},
 	_flyTo: function(coords,r){
 		var radius = r || 200;
@@ -108,24 +158,6 @@ Polymer({
 		map.scene.select("#Southwards")
 			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
 			.attr( "position", coords[0] + " " + (coords[1] +300) + " 20");
-		
-		map.scene.select("#front")
-			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
-			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
-		map.scene.select("#right")
-			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
-			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
-		map.scene.select("#left")
-			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
-			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
-		map.scene.select("#top")
-			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
-			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
-			
-		document.getElementById('viewpoint').addEventListener('viewpointChanged', this.viewFunc, false);
-		
-		map.scene.select('#pointlight')
-			.attr('location',coords[0] + " " + coords[1] + " 25");
 		
 	},
 });
