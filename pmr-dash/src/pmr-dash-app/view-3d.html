@@ -1,0 +1,133 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/x3d-elements/x3d-viewer.html">
+<link rel="import" href="../../bower_components/x3d-elements/x3d-layer.html">
+<dom-module id="view-3d">
+ <template>
+ <style>
+ 	x3d-viewer {
+ 	 display: block;
+     width: 400px;
+     height: 400px;
+     margin: 50px;
+     }
+  </style>
+	<x3d-viewer 
+		 map={{map}} 
+		 headlight="1"
+		 hour="8"
+		 themeconfig=[[themeconfig]]>
+		 <transform id='geodan_pk'></transform>
+		 <x3d-layer 
+			active=true 
+			map=[[map]]
+			on-loading='_loading'
+			on-loaded='_loaded'
+			url='http://research.geodan.nl/service/bgt3d' 
+			name='geodan_pk'
+			themeconfig=[[themeconfig]]
+			></x3d-layer>
+	</x3d-viewer>
+</template>
+</dom-module>
+
+<script>
+
+Polymer({
+	is: 'view-3d',
+	properties: {
+		map: {
+			type: Object,
+			observer: '_mapChanged'
+		},
+		themeconfig: {
+			type: Object,
+			value: function(){
+				return {
+					gray: {
+					 materials: {
+					 	floor: {diffuseColor: 'salmon',transparency: '0'},
+						wall: {diffuseColor: 'ivory',transparency: '0.5'},
+					 	geodan_pk: {diffuseColor: 'white',transparency: '0.3'},
+						building: {diffuseColor: 'salmon',transparency: '0'},
+						water: {specularColor: 'ivory', diffuseColor: 'powderblue', shininess: '1'},
+						voetpad: {diffuseColor: 'gray'},
+						rijbaan_lokale_weg: {diffuseColor: 'gray'},
+						open_verharding:{diffuseColor: 'gray'},
+						erf:{diffuseColor: 'khaki'},
+						groenvoorziening:{diffuseColor: 'yellowgreen'},
+						'gemengd bos':{diffuseColor: 'forestgreen'},
+						struiken: {diffuseColor: 'darkgreen'},
+						dek:{diffuseColor: 'gray'},
+						pijler: {diffuseColor: 'gray'},
+						light: {emissiveColor: 'yellow', transparency: 0},
+						post: {diffuseColor: 'gray'},
+						roof: {diffuseColor: 'orange'},
+						scene: {skyColor: '0.4 0.6 0.8'},
+					 }
+					}
+				}
+			}
+		}
+	},
+	_mapChanged: function(map){
+		this._flyTo([122689, 483927]);
+		map.scene.select("#viewpoint").attr('zNear',1)
+			.attr('centerOfRotation','122689,483926 12')
+			.attr('position','122738 483932 25')
+			.attr('orientation','0.5059 0.4662 0.7257 1.9445');
+		map.scene.select("navInfo").attr('speed',0.001).attr('transitionTime','1.0');
+	},
+	_flyTo: function(coords,r){
+		var radius = r || 200;
+		var x = coords[0];
+		var y = coords[1];
+		var bbox = {
+			west: x -radius,
+			east: x +radius,
+			south: y -radius,
+			north: y +radius
+		}
+		var map = self.map;
+		map.dim.minx = parseInt(bbox.west);
+		map.dim.maxx = parseInt(bbox.east);
+		map.dim.miny = parseInt(bbox.south);
+		map.dim.maxy = parseInt(bbox.north);
+		
+		var tiles = map.bbox2tiles(map.dim.getBounds());
+		document.querySelectorAll('x3d-layer').forEach(function(d){
+			d.removeTiles();//TODO make nicer
+			d.tiles = tiles;
+		});
+		
+		map.scene.select("#viewpoint")
+			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
+			.attr( "position", coords[0] + " " + coords[1] + " 550")
+			.attr('set_bind',true);
+		map.scene.select("#Northwards")
+			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
+			.attr( "position", coords[0] + " " + (coords[1] -300) + " 20");
+		map.scene.select("#Southwards")
+			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
+			.attr( "position", coords[0] + " " + (coords[1] +300) + " 20");
+		
+		map.scene.select("#front")
+			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
+			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
+		map.scene.select("#right")
+			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
+			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
+		map.scene.select("#left")
+			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
+			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
+		map.scene.select("#top")
+			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
+			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
+			
+		document.getElementById('viewpoint').addEventListener('viewpointChanged', this.viewFunc, false);
+		
+		map.scene.select('#pointlight')
+			.attr('location',coords[0] + " " + coords[1] + " 25");
+		
+	},
+});
+</script>

@@ -1,10 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="view-3d.html">
 <dom-module id="pmr-dash-app">
   <template>
     <style>
       :host {
         display: block;
+      }
+      #view3d1 {
+      	  width: 400px;
+      	  height: 400px;
       }
     </style>
     <paper-toolbar>
@@ -13,7 +18,7 @@
   <div class$="{{henk}}">Henk</div>
   <div class$="{{frans}}">Vrolijke Frans</div>
 </paper-toolbar>
-    
+	<view-3d id="view3d1"></view-3d>
   </template>
 
   <script>
