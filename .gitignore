@@ -5,3 +5,4 @@ node_modules
 .piolibdeps
 /Hardware/Zwaailicht/src/.travis.yml
 /Hardware/Zwaailicht/src/.gitignore
+bower_components

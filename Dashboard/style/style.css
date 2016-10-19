@@ -1,12 +1,18 @@
 html, body {
     background-color: #eeeeec;
+    background: url('background.png');
     font-family: 'ProzaLibreRegular';
    font-weight: normal;
    font-style: normal; 
 }
-#anneText {
+h2 {
+    border-top: solid 5px #bdbdbd;
+    padding-top:10px;
+}
+#anneText, #iBeacon {
     font-size: 20px;
-    padding-top:50px;
+    display: flex;
+    align-items: center;
 }
 .locatie {
      font-family: 'ProzaLibreBold';
@@ -26,11 +32,18 @@ html, body {
     font-size: 50px;
     text-align: center;
 }
-
+.empty {
+    color: #bdbdbd;
+    box-shadow: 0px 1px 6px #bdbdbd;
+    border: dashed  #bdbdbd;
+    opacity:0.8;
+}
 .droog {
-    box-shadow: 0px 1px 10px #ff5722;
-    border: solid 1px #ff5722;
     background-color: #ffc107;
+}
+.droog, .nee {
+    box-shadow: 0px 1px 10px #ff5722;
+    border: solid 1px #ff5722; 
 }
 .zwaaien {
     animation: blinker 1.5s ease-in infinite;

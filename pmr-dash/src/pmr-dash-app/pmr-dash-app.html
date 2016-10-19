@@ -1,0 +1,41 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<dom-module id="pmr-dash-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <paper-toolbar>
+  <div class="title">Sensor dingen dash</div>
+  <div class$="{{anne}}">Anne</div>
+  <div class$="{{henk}}">Henk</div>
+  <div class$="{{frans}}">Vrolijke Frans</div>
+</paper-toolbar>
+    
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'pmr-dash-app',
+
+      properties: {
+        anne: {
+          type: String,
+          value: 'yellow'
+        },
+        henk: {
+          type: String,
+          value: 'orange'
+        },
+        frans: {
+          type: String,
+          value: 'green'
+        },
+      },
+
+    });
+  </script>
+</dom-module>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-     <meta http-equiv="refresh" content="60">
+     <!--meta http-equiv="refresh" content="60"-->
     <title>Research Dasboard</title>
 
     <!-- Bootstrap -->
@@ -20,46 +20,64 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container-fluid">
-        <div class="row">
-
-            <div class="col-md-4" id="vrolijkeFransOverview">
+   <div class="container-fluid">
+   <div class="row">
+   <h1><center>Sensor dingen dashboard</center></h1>
+   </div>
+    <div class="row">
+        <div class="col-md-12" id="">
             <h2>Vrolijke Frans</h2>
-            </div>
-            <div class="col-md-8">
-            
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-md-4" id="vrolijkeFransOverview">
+            <div class="tile empty" id="emptyVrolijkeFrans">
+            weet niks
             </div>
         </div>
-        <div class="row">
-
-            <div class="col-md-4">
-                <h2>Weten wij waar Anne is?</h2>
-            </div>
-            <div class="col-md-6">
-            </div>
-            <div class="col-md-2">
-                <h2>Het zwaailicht</h2>
+        <div class="col-md-8">
+            <div id="vrolijkeFransGrafiek">
             </div>
         </div>
-        <div class="row">
+    </div>
+     <div class="row">
+     <hr/>
+     </div>
+    <div class="row">
+        <div class="col-md-10">
+            <h2>Weten wij waar Anne is?</h2>
+        </div>
 
-            <div class="col-md-4">
-            <div id="anneStatus" class="tile">Nee!</div>
-            </div>
-            <div class="col-md-6" id="anneText">
-            </div>
-            <div class="col-md-2">
+        <div class="col-md-2">
+            <h2>Het zwaailicht</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div id="anneStatus" class="tile nee">Nee!</div>
+        </div>
+        <div class="col-md-6" id="anneText">
+        </div>
+        <div class="col-md-2">
             <div class="tile" id="zwaaiLicht">
             </div>
-            </div>
-        </div>         
-    </div>
+        </div>
+    </div>    
+     <div class="row">
+     <hr/>
+     </div>
+     <div class="row">
+     <div id="iBeacon" class="col-md-12"></div>
+     </div>     
+   </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="node_modules/d3/build/d3.min.js"></script>
+    <script src="node_modules/d3-line-chunked/build/d3-line-chunked.min.js"></script>
    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="src/main.js"></script>
