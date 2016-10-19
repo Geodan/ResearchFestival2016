@@ -1,0 +1,83 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-ibeacon">
+  <template>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="Datastreams(36)/Observations"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+    </mqtt-connection>
+<paper-card class="white" heading="De Balie" >
+     <div class="card-content" style="max-width: 150px;">
+   {{balie}}
+  </div>
+</paper-card>
+<paper-card class="white" heading="De Tweede" >
+     <div class="card-content" style="max-width: 150px;">
+   {{tweede}}
+  </div>
+</paper-card>
+<paper-card class="white" heading="De Keuken" >
+     <div class="card-content" style="max-width: 150px;">
+   {{keuken}}
+  </div>
+</paper-card>
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-ibeacon",
+    properties: {
+        lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        }
+        
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+        this.toelichting = "Ga je gang"
+        this.lijst = [[],[],[],[]];
+    },
+    _messageChanged:function (msg) {
+        var data = JSON.parse(msg);
+        var name = data.result.split('_')[0];
+        var status = data.result.split('_')[1];
+        var locatie = data.result.split('_')[2];
+        var locId = 0;
+        switch(locatie) {
+            case 'PK Keuken':
+                locId = 1;
+            break;
+            case 'PK 2e':
+                locId = 2;
+            break;
+            case 'PK Balie':
+                locId = 3;
+            break;
+        }
+        if (this.lijst[locId].indexOf(name)<0)
+            this.lijst[locId].push(name);
+        if(locId === 0) {
+            this.lijst.forEach(function(list){
+                if(list.indexOf(name)>-1) {
+                    list.splice(list.indexOf(name),1)
+                }
+            })
+        }
+        this.balie = this.lijst[1].toString();
+        this.tweede = this.lijst[2].toString();
+        this.keuken = this.lijst[3].toString();
+       //PK 2e
+       //PK Keuken
+       //PK Balie
+    }
+  });
+</script>
+</dom-module>

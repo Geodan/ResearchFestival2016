@@ -14,7 +14,7 @@
     </mqtt-connection>
 
     <paper-card class="white" heading$="{{antwoord}}" image="style/vierde.png" alt$="{{antwoord}}">
-     <div class="card-content" style="max-width: 250px;">
+     <div class="card-content" style="max-width: 150px;">
    {{toelichting}}
   </div>
 </paper-card>
@@ -41,13 +41,13 @@
         this.toelichting = "Ga je gang"
     },
     _messageChanged:function (msg) {
-       var data = JSON.parse(msg);
+       var data = JSON.parse(msg.parsedPayload);
        if(data.reserved) {
         //bezet
         this.antwoord = 'bezet'
         this.toelichting = "door iets"
         if (data.description) {
-            this.toelichting = "met "+this.description;
+            this.toelichting = "met "+data.description;
         }
        }
        else {
