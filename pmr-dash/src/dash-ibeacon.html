@@ -14,17 +14,29 @@
     </mqtt-connection>
 <paper-card class="white" heading="De Balie" >
      <div class="card-content" style="max-width: 150px;">
-   {{balie}}
+   <template is="dom-repeat" items="{{balie}}">
+   <div>
+    {{item}}
+    </div>
+   </template>
   </div>
 </paper-card>
 <paper-card class="white" heading="De Tweede" >
      <div class="card-content" style="max-width: 150px;">
-   {{tweede}}
+  <template is="dom-repeat" items="{{tweede}}">
+   <div>
+    {{item}}
+    </div>
+    </template>
   </div>
 </paper-card>
 <paper-card class="white" heading="De Keuken" >
      <div class="card-content" style="max-width: 150px;">
-   {{keuken}}
+ <template is="dom-repeat" items="{{keuken}}">
+   <div>
+    {{item}}
+    </div>
+    </template>
   </div>
 </paper-card>
 </template>
@@ -44,6 +56,7 @@
     ready: function() {
         this.toelichting = "Ga je gang"
         this.lijst = [[],[],[],[]];
+       
     },
     _messageChanged:function (msg) {
         var data = JSON.parse(msg);
@@ -71,12 +84,9 @@
                 }
             })
         }
-        this.balie = this.lijst[1].toString();
-        this.tweede = this.lijst[2].toString();
-        this.keuken = this.lijst[3].toString();
-       //PK 2e
-       //PK Keuken
-       //PK Balie
+        this.balie = this.lijst[1];
+        this.tweede = this.lijst[2];
+        this.keuken = this.lijst[3];
     }
   });
 </script>

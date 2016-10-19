@@ -1,0 +1,60 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-zwaailicht">
+  <template>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="Datastreams(35)/Observations"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+         <mqtt-publish 
+            auto
+            retained
+            topic="Datastreams(35)/Observations"
+            payload="{{payload}}"
+            qos="1"></mqtt-publish>   
+    </mqtt-connection>
+<paper-card  image$="{{image}}" on-tap="_tapped">
+     
+</paper-card>
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-zwaailicht",
+    properties: {
+        lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        }
+        
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+        this.image = "style/zwaaiuit.gif";
+        this.status = false;
+        this.payload = JSON.stringify({result:false});
+    },
+    _messageChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);
+        if(data.result) { 
+            this.image = 'style/zwaaiaan.gif'
+        }
+        else {
+            this.image='style/zwaaiuit.gif'
+        }
+
+    },
+    _tapped:function(){
+        this.status=this.status?false:true;
+        this.payload = JSON.stringify({result:this.status});
+    }
+
+  });
+</script>
+</dom-module>
