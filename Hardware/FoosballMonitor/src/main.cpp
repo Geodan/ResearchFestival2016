@@ -6,16 +6,25 @@
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include "Adafruit_HTU21DF.h"
 
 const char* ssid = "geodan";
 const char* password = "";
 const char* mqtt_server = "gost.geodan.nl";
 
 const char* door_topic = "GOST/Datastreams(39)/Observations";
+const char* pir_topic = "GOST/Datastreams(40)/Observations";
+const char* temperature_topic = "GOST/Datastreams(41)/Observations";
+const char* hum_topic = "GOST/Datastreams(42)/Observations";
+
+unsigned long time_of_last_loop = millis();
+
 char data[80];
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+
+Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
 const int DOOR_PIN = 5;
 const int PIR_PIN = 4;
@@ -64,6 +73,7 @@ void reconnect() {
 void setup() {
     Serial.begin(9600);
     setup_wifi();
+    Wire.begin(D3, D5);
 
     pinMode(PIR_PIN, INPUT);
     pinMode(DOOR_PIN, INPUT_PULLUP);
@@ -78,14 +88,40 @@ void loop() {
     }
     client.loop();
 
+    if ((millis() - time_of_last_loop) > 60000) {
+        Serial.println("Logging :)");
+        Serial.println(String(htu.readTemperature()));
+        String payload = "{\"result\" : \" " + String(htu.readTemperature()) + "\"}";
+        payload.toCharArray(data, (payload.length() + 1));
+        client.publish(temperature_topic, data);
+
+        payload = "{\"result\" : \" " + String(htu.readHumidity()) + "\"}";
+        payload.toCharArray(data, (payload.length() + 1));
+        client.publish(hum_topic, data);
+
+        time_of_last_loop = millis();
+    }
+
+    if (millis() < time_of_last_loop) {
+        time_of_last_loop = millis();
+    }
+
     bool new_pir_state = digitalRead(PIR_PIN);
     if (new_pir_state != pir_state && pir_state) {
         pir_state = new_pir_state;
         Serial.println("Movement Done");
+
+        String payload = "{\"result\" : \" " + String(!pir_state)+ "\"}";
+        payload.toCharArray(data, (payload.length() + 1));
+        client.publish(pir_topic, data);
     }
     else if (new_pir_state != pir_state && !pir_state) {
         pir_state = new_pir_state;
         Serial.println("Movement Began!");
+
+        String payload = "{\"result\" : \" " + String(!pir_state)+ "\"}";
+        payload.toCharArray(data, (payload.length() + 1));
+        client.publish(pir_topic, data);
     }
 
     bool new_door_state = digitalRead(DOOR_PIN);
