@@ -1,7 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/x3d-elements/x3d-viewer.html">
 <link rel="import" href="../bower_components/x3d-elements/x3d-layer.html">
-<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <dom-module id="view-3d">
  <template>
@@ -13,14 +12,7 @@
      }
   </style>
   
-  <mqtt-connection auto url="ws://gost.geodan.nl:9001">
-        <mqtt-subscription
-            topic="Datastreams(35)/Observations"
-            number-of-messages="Infinity"
-            last-message="{{lastMessage}}"
-            messages="{{messages}}"
-            subscribed="{{subscribed}}">
-        </mqtt-subscription>
+  
   <paper-card img="style/3d.png" heading="Het gebouw">
    <div class="card-content" >
 	<x3d-viewer 
@@ -55,11 +47,18 @@
 Polymer({
 	is: 'view-3d',
 	properties: {
-		lastMessage: {
-            type: Object,
-            notify: true,
-            observer: '_messageChanged'
-        },
+		zwaailicht: {
+			type: Object
+		},
+		plantjes: Object,
+		anne: Object,
+		henk: Object,
+		bert: Object,
+		vierde: {
+			type: Object
+		},
+		
+		
 		map: {
 			type: Object,
 			observer: '_mapChanged'
@@ -95,21 +94,24 @@ Polymer({
 			}
 		}
 	},
-	_messageChanged:function (msg) {
-        var data = JSON.parse(msg.parsedPayload);
-        if(data.result) {
+	observers: [
+		'_zwaailichtChanged(zwaailicht.status)'
+	],
+	_ibeaconMessageChanged: function (msg) {
+		
+	},
+	_zwaailichtChanged:function (status) {
+        if(status == 'on') {
         	this.zwaaien = window.setInterval(function(){
         			d3.select('sphere')
         				.transition().attr('radius',3)
         				.transition().attr('radius',1);
         	},1000);
-            //this.image = 'style/zwaaiaan.gif'
         }
         else {
         	window.clearInterval(this.zwaaien);
         	d3.select('sphere')
         				.attr('radius',1)
-            //this.image='style/zwaaiuit.gif'
         }
 
     },
