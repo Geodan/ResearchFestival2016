@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="com.androidbeacon">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="nl.geodan.ibeacon" android:versionCode="1" android:versionName="0.0.1">
 	<uses-sdk android:minSdkVersion="16" />
 	<application android:label="Geodan IBeacon Tracker">
 		<service android:enabled="true" android:exported="true" android:isolatedProcess="false" android:label="iBeacon" android:name="com.radiusnetworks.ibeacon.service.IBeaconService"></service>
