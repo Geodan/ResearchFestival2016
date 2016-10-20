@@ -42,10 +42,11 @@
         },
         entity: {
         	type: Object,
+        	notify: true,
         	value: function(){
         		return {
         			location: 'fussbal',
-        			status: 'vrij'
+        			status: 'free'
         		};
         	}
         }
@@ -59,6 +60,7 @@
        var data = JSON.parse(msg.parsedPayload);
        if(data.reserved) {
         //bezet
+        this.set('entity.status','occupied');
         this.antwoord = 'bezet'
         this.toelichting = "door iets"
         if (data.description) {
@@ -67,6 +69,7 @@
        }
        else {
         //vrij
+        this.set('entity.status','free');
         this.antwoord = 'vrij';
         this.toelichting = "Ga je gang"
        }
