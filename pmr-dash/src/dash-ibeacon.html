@@ -59,10 +59,14 @@
        
     },
     _messageChanged:function (msg) {
-        var data = JSON.parse(msg);
+
+    
+        var data = JSON.parse(msg.parsedPayload);
+          console.log(data)
         var name = data.result.split('_')[0];
         var status = data.result.split('_')[1];
         var locatie = data.result.split('_')[2];
+        var l = this.lijst
         var locId = 0;
         switch(locatie) {
             case 'PK Keuken':
@@ -75,18 +79,22 @@
                 locId = 3;
             break;
         }
-        if (this.lijst[locId].indexOf(name)<0)
-            this.lijst[locId].push(name);
-        if(locId === 0) {
-            this.lijst.forEach(function(list){
-                if(list.indexOf(name)>-1) {
-                    list.splice(list.indexOf(name),1)
-                }
-            })
-        }
-        this.balie = this.lijst[1];
-        this.tweede = this.lijst[2];
-        this.keuken = this.lijst[3];
+        l.forEach(function (list) {
+          if(list.indexOf(name)>-1) {
+            list.splice(list.indexOf(name),1)
+          }
+        })
+        if (l[locId].indexOf(name)<0)
+            l[locId].push(name);
+        
+       
+        this.keuken = l[1].slice();
+        this.tweede = l[2].slice();
+        this.balie = l[3].slice();
+        this.lijst = l;
+        console.log(this.keuken);
+        console.log(this.balie);
+        console.log(this.tweede);
     }
   });
 </script>
