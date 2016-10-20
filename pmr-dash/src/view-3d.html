@@ -95,23 +95,35 @@ Polymer({
 		}
 	},
 	observers: [
-		'_zwaailichtChanged(zwaailicht.status)'
+		'_zwaailichtChanged(zwaailicht.status)',
+		'_fussballChanged(vierde.status)'
 	],
-	_ibeaconMessageChanged: function (msg) {
-		
-	},
-	_zwaailichtChanged:function (status) {
-        if(status == 'on') {
-        	this.zwaaien = window.setInterval(function(){
+	_fussballChanged: function (status) {
+		if(status == 'on') {
+			this._fussbal = window.setInterval(function(){
         			d3.select('sphere')
         				.transition().attr('radius',3)
         				.transition().attr('radius',1);
         	},1000);
-        }
-        else {
-        	window.clearInterval(this.zwaaien);
+		}
+		else {
+			window.clearInterval(this._fussbal);
         	d3.select('sphere')
         				.attr('radius',1)
+		}
+	},
+	_zwaailichtChanged:function (status) {
+        if(status == 'on') {
+        	this._zwaaien = window.setInterval(function(){
+        			d3.select('#zwaailicht').attr('on',true)
+        				.transition().duration(200).attr('intensity',1)
+        				.transition().duration(200).attr('intensity',0);
+        	},400);
+        }
+        else {
+        	window.clearInterval(this._zwaaien);
+        	d3.select('#zwaailicht')
+        				.attr('on',false);
         }
 
     },
@@ -123,14 +135,17 @@ Polymer({
 			.attr('orientation','0.5059 0.4662 0.7257 1.9445');
 		map.scene.select("navInfo").attr('speed',0.001).attr('transitionTime','1.0');
 		
-		var shape = map.scene.append('transform')
+		var light = map.scene.append('transform')
 			.attr('translation', function(d){
 					return '122690.10 483916.19 7';
-				}).append('shape');
-		shape.append('appearance').append('material').classed('material', true).attr('emissiveColor',"red");
-		shape.append('sphere')
-				.attr('radius',3);
-				//.attr('size','0.3 0.3 0.1');
+				}).append('pointlight')
+				.attr('id','zwaailicht')
+				.attr('global',true)
+				.attr('on',true)
+				.attr('radius',2);
+				
+		//<PointLight ambientIntensity='0' attenuation='1,0,0' color='1,1,1' global='false' intensity='1' location='0,0,0' metadata='X3DMetadataObject' on='true' radius='100' shadowFilterSize='0' shadowIntensity='0' shadowMapSize='1024' shadowOffset='0' zFar='-1' zNear='-1' ></PointLight>
+
 	},
 	_flyTo: function(coords,r){
 		var radius = r || 200;
