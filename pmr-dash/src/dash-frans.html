@@ -3,6 +3,12 @@
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <dom-module id="dash-frans">
   <template>
+  <style>
+  paper-card {
+    width: 250px;
+    margin: 5px;
+  }
+  </style>
     <mqtt-connection auto url="ws://gost.geodan.nl:9001">
         <mqtt-subscription
             topic="Datastreams(32)/Observations"
@@ -25,7 +31,7 @@
     </mqtt-connection>
 
     <paper-card class="white" heading$="{{antwoord}}" image="style/frans.png" alt$="{{antwoord}}">
-  <div class="card-content" style="max-width: 250px;">
+  <div class="card-content">
    {{sensorOne}}, {{sensorTwo}}, {{sensorThree}}
   </div>
 </paper-card>

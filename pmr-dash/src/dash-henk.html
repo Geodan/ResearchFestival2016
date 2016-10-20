@@ -3,6 +3,12 @@
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <dom-module id="dash-henk">
   <template>
+  <style>
+  paper-card {
+    width: 150px;
+    margin: 5px;
+  }
+  </style>
     <mqtt-connection auto url="ws://gost.geodan.nl:9001">
         <mqtt-subscription
             topic="hierisanne"
@@ -13,7 +19,7 @@
         </mqtt-subscription>
     </mqtt-connection>
 
-    <paper-card style="max-width: 150px;" class="white" heading$="{{antwoord}}" image="style/henk.png" alt$="{{antwoord}}">
+    <paper-card class="white" heading$="{{antwoord}}" image="style/henk.png" alt$="{{antwoord}}">
      <div class="card-content" >
    {{toelichting}}
   </div>

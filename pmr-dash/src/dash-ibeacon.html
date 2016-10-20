@@ -3,6 +3,12 @@
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <dom-module id="dash-ibeacon">
   <template>
+  <style>
+  paper-card {
+    width: 150px;
+    margin: 5px;
+  }
+  </style>
     <mqtt-connection auto url="ws://gost.geodan.nl:9001">
         <mqtt-subscription
             topic="Datastreams(36)/Observations"
@@ -13,7 +19,7 @@
         </mqtt-subscription>
     </mqtt-connection>
 <paper-card class="white" heading="De Balie" >
-     <div class="card-content" style="max-width: 150px;">
+     <div class="card-content" >
    <template is="dom-repeat" items="{{balie}}">
    <div>
     {{item}}
@@ -22,7 +28,7 @@
   </div>
 </paper-card>
 <paper-card class="white" heading="De Tweede" >
-     <div class="card-content" style="max-width: 150px;">
+     <div class="card-content" >
   <template is="dom-repeat" items="{{tweede}}">
    <div>
     {{item}}
@@ -31,7 +37,7 @@
   </div>
 </paper-card>
 <paper-card class="white" heading="De Keuken" >
-     <div class="card-content" style="max-width: 150px;">
+     <div class="card-content" >
  <template is="dom-repeat" items="{{keuken}}">
    <div>
     {{item}}
