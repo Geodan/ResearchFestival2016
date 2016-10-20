@@ -2,13 +2,14 @@
 <link rel="import" href="../bower_components/x3d-elements/x3d-viewer.html">
 <link rel="import" href="../bower_components/x3d-elements/x3d-layer.html">
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
 <dom-module id="view-3d">
  <template>
  <style>
  	x3d-viewer {
  	 display: block;
-     width: 400px;
-     height: 400px;
+     width: 318px;
+     height: 318px;
      }
   </style>
   
@@ -20,7 +21,8 @@
             messages="{{messages}}"
             subscribed="{{subscribed}}">
         </mqtt-subscription>
-  
+  <paper-card img="style/3d.png">
+   <div class="card-content" >
 	<x3d-viewer 
 		 map={{map}} 
 		 headlight="1"
@@ -43,6 +45,8 @@
 			themeconfig=[[themeconfig]]
 			></x3d-layer>
 	</x3d-viewer>
+	</div>
+	</paper-card>
 </template>
 </dom-module>
 

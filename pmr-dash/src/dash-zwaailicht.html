@@ -19,7 +19,9 @@
             qos="1"></mqtt-publish>   
     </mqtt-connection>
 <paper-card  image$="{{image}}" on-tap="_tapped">
-     
+   <div class="card-content" >
+   {{toelichting}}
+  </div>  
 </paper-card>
 </template>
 <script>
@@ -39,14 +41,17 @@
         this.image = "style/zwaaiuit.gif";
         this.status = false;
         this.payload = JSON.stringify({result:false});
+        this.toelichting = "Het zwaailicht staat uit";
     },
     _messageChanged:function (msg) {
         var data = JSON.parse(msg.parsedPayload);
         if(data.result) { 
             this.image = 'style/zwaaiaan.gif'
+            this.toelichting = "Het zwaailicht staat aan"
         }
         else {
             this.image='style/zwaaiuit.gif'
+            this.toelichting = "Het zwaailicht staat uit"
         }
 
     },
