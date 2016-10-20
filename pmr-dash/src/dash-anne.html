@@ -49,8 +49,7 @@
      
     },
     _messageChanged:function (msg) {
-        var data = JSON.parse(msg.parsedPayload);
-        console.log(data)
+        var data = JSON.parse(msg.parsedPayload);        
         if(data.location!==null) {
             this.antwoord = 'Ja...';
             this.toelichting = 'hij is in '+data.location+' bezig met '+data.action;
