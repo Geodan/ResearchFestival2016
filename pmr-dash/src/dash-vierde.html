@@ -3,6 +3,12 @@
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <dom-module id="dash-vierde">
   <template>
+  <style>
+  paper-card {
+    width: 150px;
+    margin: 5px;
+  }
+  </style>
     <mqtt-connection auto url="ws://gost.geodan.nl:9001">
         <mqtt-subscription
             topic="werkkamervier"
@@ -14,7 +20,7 @@
     </mqtt-connection>
 
     <paper-card class="white" heading$="{{antwoord}}" image="style/vierde.png" alt$="{{antwoord}}">
-     <div class="card-content" style="max-width: 150px;">
+     <div class="card-content" >
    {{toelichting}}
   </div>
 </paper-card>

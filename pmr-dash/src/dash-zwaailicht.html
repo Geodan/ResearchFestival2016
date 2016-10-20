@@ -3,6 +3,12 @@
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <dom-module id="dash-zwaailicht">
   <template>
+  <style>
+  paper-card {
+    width: 150px;
+    margin: 5px;
+  }
+  </style>
     <mqtt-connection auto url="ws://gost.geodan.nl:9001">
         <mqtt-subscription
             topic="Datastreams(35)/Observations"
