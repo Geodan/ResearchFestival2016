@@ -1,0 +1,74 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-anne-desk">
+  <template>
+  <style>
+  paper-card {
+    width: 350px;
+    margin: 5px;
+  }
+  </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="Datastreams(51)/Observations"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+    </mqtt-connection>
+
+    <paper-card class="white" heading$="{{antwoord}}" image="style/anne-desk.png" alt$="{{antwoord}}">
+  <div class="card-content">
+   {{toelichting}}
+  </div>
+</paper-card>
+
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-anne-desk",
+    properties: {
+        lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        },
+        antwoord: {
+            type: String,
+            value: 'Nee!'
+        },
+        toelichting: {
+            type: String,
+            value: 'Hij zit niet achter zijn bureau'
+        },
+        anne: {
+            type: String,
+            value: 'red',
+            notify: true
+        }
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+     
+    },
+    _messageChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);        
+        if(data.result!==null) {
+            if (data.result) {
+                this.antwoord = 'Waarschijnlijk';
+                this.toelichting = 'Iemand zit achter zijn bureau';
+                this.anne = 'green';
+            }
+            else {
+                this.antwoord = 'Nee!';
+                this.toelichting = 'Hij zit niet achter zijn bureau';
+                this.anne = 'red';
+            }
+        }
+    }
+  });
+</script>
+</dom-module>
