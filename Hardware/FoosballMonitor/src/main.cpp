@@ -1,7 +1,5 @@
-
 /*
-    MQTT Client for an ESP8266 device that sends binary sensordata to
-    a MQTT broker.
+    NodeMCU Foosball monitor
 */
 
 #include <ESP8266WiFi.h>
@@ -18,7 +16,6 @@ const char* temperature_topic = "GOST/Datastreams(41)/Observations";
 const char* hum_topic = "GOST/Datastreams(42)/Observations";
 
 unsigned long time_of_last_loop = millis();
-
 char data[80];
 
 WiFiClient espClient;
@@ -26,8 +23,8 @@ PubSubClient client(espClient);
 
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
-const int DOOR_PIN = 5;
-const int PIR_PIN = 4;
+const int DOOR_PIN = D2;
+const int PIR_PIN = D3;
 
 bool pir_state = false;
 bool door_state = false;
