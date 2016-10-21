@@ -9,6 +9,7 @@
 <link rel="import" href="dash-vierde.html">
 <link rel="import" href="dash-ibeacon.html">
 <link rel="import" href="dash-zwaailicht.html">
+<link rel="import" href="dash-linegraph.html">
 <dom-module id="pmr-dash-app">
   <template>
     <style>
@@ -16,7 +17,7 @@
         display: block;
       }
 
-     
+
       #content {
         display: flex;
         flex-wrap: wrap;
@@ -26,7 +27,7 @@
 
       .col {
         flex: 1;
-       
+
       }
 
     </style>
@@ -39,14 +40,16 @@
 
 <div id="content" >
 
+
 <div class="col md">
+<!--<dash-linegraph class="card" datastream$={{32}}></dash-linegraph> -->
 <dash-anne class="card" anne={{anne}}></dash-anne>
 <dash-anne-desk class="card" anne-desk={{anne-desk}}></dash-anne-desk>
 <view-3d class="card" id="view3d1"
       zwaailicht=[[zwaailicht]]
       fussbal=[[vierde]]
      ></view-3d>
-     
+
 </div>
 <div class="col sm">
  <dash-frans class="card" frans={{frans}}></dash-frans>
@@ -58,11 +61,11 @@
         <dash-ibeacon class="card"></dash-ibeacon>
 
 </div>
-    
-    
-     
-   
-    
+
+
+
+
+
     </div>
   </template>
 
@@ -72,10 +75,9 @@
       is: 'pmr-dash-app',
 
       properties: {
-        
+
       },
 
     });
   </script>
 </dom-module>
-

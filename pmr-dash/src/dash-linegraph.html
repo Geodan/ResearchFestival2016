@@ -1,0 +1,70 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<dom-module id="dash-linegraph">
+  <template>
+  <style>
+  paper-card {
+    width: 250px;
+    margin: 5px;
+  }
+  .bar {
+        fill: #5677fc;
+    }
+  </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="Datastreams({{datastream}})/Observation"
+            number-of-messages="Infinity"
+            last-message="{{last_message}}"
+        </mqtt-subscription>
+    </mqtt-connection>
+
+<paper-card class="white" heading="" alt$="{{antwoord}}">
+  <div class="card-content">
+      
+  </div>
+</paper-card>
+
+</template>
+<script>
+    // register a new element called proto-element
+    Polymer({
+        is: "dash-linegraph",
+        properties: {
+            values: {
+                type: Object,
+                notify: true,
+                observer: '_updategraph'
+            },
+            datastream: {
+                type: Number,
+                notify: true,
+                observer: '_datastreamchanged'
+            },
+            name : {
+                type: String,
+                notify: false
+            },
+            last_message : {
+                type: String,
+                notify: true,
+                observer: '_newmessage'
+            }
+        },
+        // add a callback to the element's prototype
+        ready: function() {
+            this.values = [];
+        },
+        _newmessage:function (msg) {
+            var data = JSON.parse(msg.parsedPayload);
+            this.new_value = data.result;
+            this.values.push(this.new_value);
+        },
+        _updategraph: function(values) {
+
+        }
+    });
+</script>
+</dom-module>
