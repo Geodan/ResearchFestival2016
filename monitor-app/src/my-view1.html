@@ -75,33 +75,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       	  return (status=='Vrij')?'avatar green':'avatar red';
       },
       notify: function(header, body){
-      	var Notify = window.Notify.default;
-		function doNotification(){
-			var myNotification = new Notify(header, {
-				body: body,
-				notifyShow: onNotifyShow
+      	function notifyMe() {
+		  // Let's check if the browser supports notifications
+		  if (!("Notification" in window)) {
+			alert("This browser does not support desktop notification");
+		  }
+		
+		  // Let's check whether notification permissions have already been granted
+		  else if (Notification.permission === "granted") {
+			// If it's okay let's create a notification
+			var notification = new Notification("Hi there!");
+		  }
+		
+		  // Otherwise, we need to ask the user for permission
+		  else if (Notification.permission !== 'denied') {
+			Notification.requestPermission(function (permission) {
+			  // If the user accepts, let's create a notification
+			  if (permission === "granted") {
+				var notification = new Notification("Hi there!");
+			  }
 			});
-			
-			function onNotifyShow() {
-				console.log('notification was shown!');
-			}
-			myNotification.show();
-		}
+		  }
 		
-		if (!Notify.needsPermission) {
-			doNotification();
-		} else if (Notify.isSupported()) {
-			Notify.requestPermission(onPermissionGranted, onPermissionDenied);
+		  // At last, if the user has denied notifications, and you 
+		  // want to be respectful there is no need to bother them any more.
 		}
-		
-		function onPermissionGranted() {
-			console.log('Permission has been granted by the user');
-			doNotification();
-		}
-		
-		function onPermissionDenied() {
-			console.warn('Permission has been denied by the user');
-		}
+		notifyMe();
       }
     });
   </script>

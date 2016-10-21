@@ -10,9 +10,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-publish.html">
 <link rel="import" href="shared-styles.html">
-<script src="../bower_components/notify.js/dist/notify.js"></script>
-
+<!--<script src="../bower_components/notify.js/dist/notify.js"></script>
+-->
 <dom-module id="gost-monitor">
   <template>
     <style include="shared-styles">
@@ -21,7 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <mqtt-publish 
             auto
             retained
-            topic="Datastreams(35)/Observations"
+            topic="getstatus"
             payload="{{statuspayload}}"
             qos="1"></mqtt-publish>	
            <template is='dom-repeat' items='[[entities]]'>
@@ -45,8 +46,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify: true
          }
       },
-      read: function(){
-      	  this.statuspayload = JSON.stringify({"status": "on"});
+      ready: function(){
+    	  	this.statuspayload = JSON.stringify({"status": "on"});
       },
       onmessage: function(e){
       	  var item = e.model.item;
