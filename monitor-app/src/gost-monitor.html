@@ -1,0 +1,58 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<link rel="import" href="shared-styles.html">
+<script src="../bower_components/notify.js/dist/notify.js"></script>
+
+<dom-module id="gost-monitor">
+  <template>
+    <style include="shared-styles">
+    </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+    	<template is='dom-repeat' items='[[entities]]'>
+			<mqtt-subscription
+				topic="[[item.stream]]"
+				number-of-messages="Infinity"
+				on-mqtt-subscription-message="onmessage"
+			 ></mqtt-subscription>
+         </template>
+    </mqtt-connection>
+    
+  </template>
+
+  <script>
+    Polymer({
+      is: 'gost-monitor',
+      properties: {
+      	 entities: {
+            type: Array,
+            notify: true
+         }
+      },
+      onmessage: function(e){
+      	  var item = e.model.item;
+      	  var msg = e.detail;
+      	  var data = JSON.parse(msg.parsedPayload);
+      	  if (data.result || data.reserved){ //FIXME: maak uniforme msg content
+      	  	console.log(item.name,'bezet');
+			item.status = 'Bezet';
+			this.set('entities.'+e.model.index+'.status','Bezet');
+		  }
+		  else {
+		  	  console.log(item.name,'vrij');
+		  	  item.status = 'Vrij';
+		  	  this.set('entities.'+e.model.index+'.status','Vrij');
+		  }
+      }
+    });
+  </script>
+</dom-module>

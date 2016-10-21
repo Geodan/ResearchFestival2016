@@ -78,7 +78,7 @@
 				</appearance>
 			</shape>
 		 </transform>
-		 <inline url='geodan_pk.x3d'></inline>
+		 <inline id='building' nameSpaceName="geodanpk" mapDEFToID="true" url='http://research.geodan.nl/service/geodan3d?set=geodan_pk'></inline>
 		 <!--
 		 <transform id='geodan_pk'></transform>
 		 <x3d-layer 
@@ -159,6 +159,12 @@ Polymer({
 		'_zwaailichtChanged(zwaailicht.status)',
 		'_fussballChanged(fussbal.status)'
 	],
+	rerender: function(target){
+		d3.select(target).selectAll('.wall')
+			.select('twosidedmaterial').attr('diffuseColor','white').attr('transparency',0.8);
+		d3.select(target).selectAll('.floor')
+			.select('twosidedmaterial').attr('diffuseColor','salmon');
+	},
 	_fussballChanged: function (status) {
 		if(status == 'free') {
 			d3.select('#fussbal').select('material')
@@ -198,6 +204,9 @@ Polymer({
 			.attr('orientation','0.5059 0.4662 0.7257 1.9445');
 		map.scene.select("navInfo").attr('speed',0.001).attr('transitionTime','1.0');
 		
+		map.scene.select('#building').node().onload = function(d){
+			this.rerender(d.target);
+		};
 
 	},
 	_flyTo: function(coords,r){
