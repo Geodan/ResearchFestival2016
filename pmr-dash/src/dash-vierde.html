@@ -1,0 +1,79 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-vierde">
+  <template>
+  <style>
+  paper-card {
+    width: 150px;
+    margin: 5px;
+  }
+  </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="werkkamervier"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+    </mqtt-connection>
+
+    <paper-card class="white" heading$="{{antwoord}}" image="style/vierde.png" alt$="{{antwoord}}">
+     <div class="card-content" >
+   {{toelichting}}
+  </div>
+</paper-card>
+
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-vierde",
+    properties: {
+        lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        },
+        antwoord: {
+            type: String,
+            value: 'Vrij'
+        },
+        entity: {
+        	type: Object,
+        	notify: true,
+        	value: function(){
+        		return {
+        			location: 'fussbal',
+        			status: 'free'
+        		};
+        	}
+        }
+        
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+        this.toelichting = "Ga je gang"
+    },
+    _messageChanged:function (msg) {
+       var data = JSON.parse(msg.parsedPayload);
+       if(data.reserved) {
+        //bezet
+        this.set('entity.status','occupied');
+        this.antwoord = 'bezet'
+        this.toelichting = "door iets"
+        if (data.description) {
+            this.toelichting = "met "+data.description;
+        }
+       }
+       else {
+        //vrij
+        this.set('entity.status','free');
+        this.antwoord = 'vrij';
+        this.toelichting = "Ga je gang"
+       }
+    }
+  });
+</script>
+</dom-module>

@@ -1,0 +1,77 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-anne">
+  <template>
+  <style>
+  paper-card {
+    width: 350px;
+    margin: 5px;
+  }
+  </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="hierisanne"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+    </mqtt-connection>
+
+    <paper-card class="white" heading$="{{antwoord}}" image="style/wia.png" alt$="{{antwoord}}">
+  <div class="card-content">
+   {{toelichting}}
+  </div>
+</paper-card>
+
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-anne",
+    properties: {
+        lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        },
+        antwoord: {
+            type: String,
+            value: 'Nee!'
+        },
+        toelichting: {
+            type: String,
+            value: 'Het heeft dus geen zin om te vragen'
+        },
+        anne: {
+            type: String,
+            value: 'red',
+            notify: true
+        }
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+     
+    },
+    _messageChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);        
+        if(data.location!==null) {
+            this.antwoord = 'Ja...';
+            this.toelichting = 'hij is in '+data.location+' bezig met '+data.action;
+            this.anne = 'green';
+        }
+        else if(data.action !== undefined) {
+            this.antwoord = 'Misschien';
+            this.toelichting = 'Hij is bezig met '+data.action+ ', probeer het daar eens';
+            this.anne = 'orange';
+        } 
+        else {
+            this.antwoord = 'Nee!';
+            this.toelichting = 'Het heeft dus geen zin om te vragen';
+            this.anne = 'red';
+        }
+    }
+  });
+</script>
+</dom-module>

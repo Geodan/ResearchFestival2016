@@ -1,0 +1,23 @@
+{
+  "name": "pmr-dash",
+  "description": "Sensor dingen dash",
+  "main": "index.html",
+  "dependencies": {
+    "polymer": "~1",
+    "mqtt-elements": "^0.0.6-beta",
+    "app-layout": "~0.10",
+    "app-route": "*",
+    "paper-elements": "~1",
+    "iron-elements": "~1",
+    "x3d-elements": "https://github.com/GeodanElements/x3d-elements.git"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#~1",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#~1",
+    "web-component-tester": "~4",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#~0.7.0"
+  },
+  "resolutions": {
+    "polymer": "^1.7.0"
+  }
+}

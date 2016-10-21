@@ -1,0 +1,41 @@
+html, body {
+    background-color: #eeeeec;
+    background: url('background.png');
+    font-family: 'ProzaLibreRegular';
+   font-weight: normal;
+   font-style: normal; 
+   margin: 0;
+   padding:0;
+}
+
+.green::before {
+    color: #259b24;
+    content: ' o ';
+    font-family: 'ProzaLibreExtraBold';
+    font-size: larger;
+    margin-left: 5px;
+}
+
+.orange::before {
+    color: #ff5722;
+    content: ' o ';
+    font-family: 'ProzaLibreExtraBold';
+    font-size: larger;
+    margin-left: 5px;
+}
+
+.red::before {
+    color: #e51c23;
+    content: ' o ';
+    font-family: 'ProzaLibreExtraBold';
+    font-size: larger;
+    margin-left: 5px;
+}
+
+.yellow::before {
+    color: #ffc107;
+    content: ' o ';
+    font-family: 'ProzaLibreExtraBold';
+    font-size: larger;
+    margin-left: 5px;
+}

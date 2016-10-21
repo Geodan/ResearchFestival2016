@@ -1,0 +1,73 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-henk">
+  <template>
+  <style>
+  paper-card {
+    width: 150px;
+    margin: 5px;
+  }
+  </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="hierisanne"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+    </mqtt-connection>
+
+    <paper-card class="white" heading$="{{antwoord}}" image="style/henk.png" alt$="{{antwoord}}">
+     <div class="card-content" >
+   {{toelichting}}
+  </div>
+</paper-card>
+
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-henk",
+    properties: {
+        lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        },
+        antwoord: {
+            type: String,
+            value: 'Ergens'
+        },
+        henk: {
+            type: String,
+            value: 'orange',
+            notify: true
+        }
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+        this.toelichting = "Deze dienst is nog offline"
+    },
+    _messageChanged:function (msg) {
+        var a = Math.random()*3;
+        if (a<1) {
+            this.antwoord = "binnen";
+            this.toelichting = "Zijn auto is gezien";
+            this.henk = 'green';
+        }
+        else if (a <2) {
+            this.antwoord = "buiten";
+            this.toelichting = "Zijn auto is niet op zijn plek";
+            this.henk = 'red';
+        }
+        else {
+            this.antwoord = "ergens";
+            this.toelichting = "Deze dienst is nog offline";
+            this.henk = 'orange';
+        }
+    }
+  });
+</script>
+</dom-module>

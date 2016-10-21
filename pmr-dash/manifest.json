@@ -1,0 +1,7 @@
+{
+  "name": "pmr-dash",
+  "short_name": "pmr-dash",
+  "description": "Sensor dingen dash",
+  "start_url": "/",
+  "display": "standalone"
+}
