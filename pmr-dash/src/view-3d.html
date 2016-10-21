@@ -1,32 +1,104 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/x3d-elements/x3d-viewer.html">
 <link rel="import" href="../bower_components/x3d-elements/x3d-layer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
 <dom-module id="view-3d">
  <template>
  <style>
  	x3d-viewer {
- 	 display: block;
-     width: 400px;
-     height: 400px;
-     margin: 50px;
+ 	 display: inline-block;
+     width: 318px;
+     height:318px;
      }
+
+  paper-card {
+    width: 350px;
+    margin: 5px;
+  }
   </style>
+
+  
+  
+  <paper-card heading="Het gebouw">
+   <div class="card-content" >
 	<x3d-viewer 
 		 map={{map}} 
-		 headlight="1"
+		 headlight="false"
 		 hour="8"
 		 themeconfig=[[themeconfig]]>
+		 
+		 <PointLight
+    		id='zwaailicht'
+    		on="TRUE" 
+    		intensity="1" 
+    		ambientIntensity="0" 
+    		color="1 0 0" 
+    		location="122690.10,483916.19,7" 
+    		radius="3" 
+    		shadowIntensity="0.5" 
+    		zNear="20" 
+    		shadowMapSize="1024" 
+    		zFar="-1" 
+    		attenuation="1,0,0" 
+    		shadowCascades="1" 
+    		shadowSplitFactor="1" 
+    		shadowSplitOffset="0.1"
+    	></PointLight>
+    	<PointLight
+    		id='fussballicht'
+    		on="TRUE" 
+    		intensity="1" 
+    		ambientIntensity="0" 
+    		color="0 1 0" 
+    		location="122686.56,483920.91,13" 
+    		radius="3" 
+    		shadowIntensity="0.5" 
+    		zNear="20" 
+    		shadowMapSize="1024" 
+    		zFar="-1" 
+    		attenuation="1,0,0" 
+    		shadowCascades="1" 
+    		shadowSplitFactor="1" 
+    		shadowSplitOffset="0.1"
+    	></PointLight>
+    	<transform translation='122690.10,483916.19,7'>
+			<shape id='zwaaibol' DEF='zwaaibol'>
+				<sphere radius=0.5></sphere>
+				<appearance sorttype='opaque' alphaClipThreshold='0.1'>
+					<material emissiveColor='darkred' />
+				</appearance>
+			</shape>
+		 </transform>
+		 
+		 <transform translation='122686.56,483920.91,13'>
+			<shape id='fussbal'>
+				<sphere radius=0.5></sphere>
+				<appearance sorttype='opaque' alphaClipThreshold='0.1'>
+					<material emissiveColor='0 1 0' />
+				</appearance>
+			</shape>
+		 </transform>
+		 
 		 <transform id='geodan_pk'></transform>
 		 <x3d-layer 
 			active=true 
 			map=[[map]]
-			on-loading='_loading'
-			on-loaded='_loaded'
 			url='http://research.geodan.nl/service/bgt3d' 
 			name='geodan_pk'
 			themeconfig=[[themeconfig]]
 			></x3d-layer>
+		<transform id='sensors_pk'></transform>
+		 <x3d-layer 
+			active=true 
+			map=[[map]]
+			url='http://research.geodan.nl/service/bgt3d' 
+			name='sensors_pk'
+			themeconfig=[[themeconfig]]
+			></x3d-layer>
+			
 	</x3d-viewer>
+	</div>
+	</paper-card>
 </template>
 </dom-module>
 
@@ -35,6 +107,18 @@
 Polymer({
 	is: 'view-3d',
 	properties: {
+		zwaailicht: {
+			type: Object
+		},
+		plantjes: Object,
+		anne: Object,
+		henk: Object,
+		bert: Object,
+		fussbal: {
+			type: Object
+		},
+		
+		
 		map: {
 			type: Object,
 			observer: '_mapChanged'
@@ -46,7 +130,8 @@ Polymer({
 					gray: {
 					 materials: {
 					 	floor: {diffuseColor: 'salmon',transparency: '0'},
-						wall: {diffuseColor: 'ivory',transparency: '0.5'},
+						wall: {diffuseColor: 'ivory',transparency: '0.8'},
+						sensors_pk: {diffuseColor: 'red'},
 					 	geodan_pk: {diffuseColor: 'white',transparency: '0.3'},
 						building: {diffuseColor: 'salmon',transparency: '0'},
 						water: {specularColor: 'ivory', diffuseColor: 'powderblue', shininess: '1'},
@@ -69,6 +154,41 @@ Polymer({
 			}
 		}
 	},
+	observers: [
+		'_zwaailichtChanged(zwaailicht.status)',
+		'_fussballChanged(fussbal.status)'
+	],
+	_fussballChanged: function (status) {
+		if(status == 'free') {
+			d3.select('#fussbal').select('material')
+        			.transition().duration(200).attr('emissiveColor','0 1 0');
+        	d3.select('#fussballicht').transition().duration(200).attr('color','0 1 0');
+		}
+		else {
+			d3.select('#fussbal').select('material')
+        			.transition().duration(200).attr('emissiveColor','1 0 0');
+        	d3.select('#fussballicht').transition().duration(200).attr('color','1 0 0');
+		}
+	},
+	_zwaailichtChanged:function (status) {
+        if(status == 'on') {
+        	this._zwaaien = window.setInterval(function(){
+        			d3.select('#zwaailicht').attr('on',true)
+        				.transition().duration(200).attr('intensity',1)
+        				.transition().duration(200).attr('intensity',0);
+        			d3.select('#zwaaibol').select('material')
+        				.transition().duration(200).attr('emissiveColor','1 0 0')
+        				.transition().duration(200).attr('emissiveColor','0 0 0');
+        	},400);
+        }
+        else {
+        	window.clearInterval(this._zwaaien);
+        	d3.select('#zwaailicht')
+        				.attr('on',false);
+        	d3.select('#zwaaibol').select('material').attr('emissiveColor','0 0 0');
+        }
+
+    },
 	_mapChanged: function(map){
 		this._flyTo([122689, 483927]);
 		map.scene.select("#viewpoint").attr('zNear',1)
@@ -76,6 +196,8 @@ Polymer({
 			.attr('position','122738 483932 25')
 			.attr('orientation','0.5059 0.4662 0.7257 1.9445');
 		map.scene.select("navInfo").attr('speed',0.001).attr('transitionTime','1.0');
+		
+
 	},
 	_flyTo: function(coords,r){
 		var radius = r || 200;
@@ -109,24 +231,6 @@ Polymer({
 		map.scene.select("#Southwards")
 			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
 			.attr( "position", coords[0] + " " + (coords[1] +300) + " 20");
-		
-		map.scene.select("#front")
-			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
-			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
-		map.scene.select("#right")
-			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
-			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
-		map.scene.select("#left")
-			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
-			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
-		map.scene.select("#top")
-			.attr( "centerOfRotation", coords[0] + " " + coords[1] + " 0" )
-			.attr( "position", coords[0] + " " + (coords[1]) + " 20");
-			
-		document.getElementById('viewpoint').addEventListener('viewpointChanged', this.viewFunc, false);
-		
-		map.scene.select('#pointlight')
-			.attr('location',coords[0] + " " + coords[1] + " 25");
 		
 	},
 });

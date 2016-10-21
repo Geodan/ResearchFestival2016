@@ -5,7 +5,9 @@
 <link rel="import" href="dash-anne.html">
 <link rel="import" href="dash-frans.html">
 <link rel="import" href="dash-henk.html">
-
+<link rel="import" href="dash-vierde.html">
+<link rel="import" href="dash-ibeacon.html">
+<link rel="import" href="dash-zwaailicht.html">
 <dom-module id="pmr-dash-app">
   <template>
     <style>
@@ -13,22 +15,18 @@
         display: block;
       }
 
-      #view3d1 {
-      	  width: 400px;
-      	  height: 400px;
-      }
-
-      dash-anne {
-        max-width: 350px;
-      }
-      dash-henk {
-        max-width: 150px;
-      }
+     
       #content {
         display: flex;
-
+        flex-wrap: wrap;
+         justify-content: space-between;
+          align-content: space-around;
       }
-      .card {margin: 5px;}
+
+      .col {
+        flex: 1;
+       
+      }
 
     </style>
     <paper-toolbar>
@@ -39,10 +37,30 @@
 </paper-toolbar>
 
 <div id="content" >
-    <dash-anne class="card" anne={{anne}}></dash-anne>
-     <dash-frans class="card" frans={{frans}}></dash-frans>
-     <dash-henk class="card"  henk={{henk}}></dash-henk>
-     <view-3d class="card" id="view3d1"></view-3d>
+
+<div class="col md">
+<dash-anne class="card" anne={{anne}}></dash-anne>
+<view-3d class="card" id="view3d1"
+      zwaailicht=[[zwaailicht]]
+      fussbal=[[vierde]]
+     ></view-3d>
+     
+</div>
+<div class="col sm">
+ <dash-frans class="card" frans={{frans}}></dash-frans>
+</div>
+<div class="col xs">
+<dash-henk class="card"  henk={{henk}}></dash-henk>
+     <dash-vierde class="card" entity={{vierde}}></dash-vierde>
+      <dash-zwaailicht class="card" entity={{zwaailicht}}></dash-zwaailicht>
+        <dash-ibeacon class="card"></dash-ibeacon>
+
+</div>
+    
+    
+     
+   
+    
     </div>
   </template>
 
@@ -58,3 +76,4 @@
     });
   </script>
 </dom-module>
+

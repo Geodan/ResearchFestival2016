@@ -3,6 +3,12 @@
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <dom-module id="dash-vierde">
   <template>
+  <style>
+  paper-card {
+    width: 150px;
+    margin: 5px;
+  }
+  </style>
     <mqtt-connection auto url="ws://gost.geodan.nl:9001">
         <mqtt-subscription
             topic="werkkamervier"
@@ -14,7 +20,7 @@
     </mqtt-connection>
 
     <paper-card class="white" heading$="{{antwoord}}" image="style/vierde.png" alt$="{{antwoord}}">
-     <div class="card-content" style="max-width: 250px;">
+     <div class="card-content" >
    {{toelichting}}
   </div>
 </paper-card>
@@ -32,32 +38,41 @@
         },
         antwoord: {
             type: String,
-            value: 'Ergens'
+            value: 'Vrij'
         },
-        henk: {
-            type: String,
-            value: 'orange',
-            notify: true
+        entity: {
+        	type: Object,
+        	notify: true,
+        	value: function(){
+        		return {
+        			location: 'fussbal',
+        			status: 'free'
+        		};
+        	}
         }
+        
     },
     // add a callback to the element's prototype
     ready: function() {
-        this.toelichting = "Deze dienst is nog offline"
+        this.toelichting = "Ga je gang"
     },
     _messageChanged:function (msg) {
-        var a = Math.random()*3;
-        if (a<1) {
-            this.antwoord = "binnen";
-            this.toelichting = "Zijn auto is gezien";
+       var data = JSON.parse(msg.parsedPayload);
+       if(data.reserved) {
+        //bezet
+        this.set('entity.status','occupied');
+        this.antwoord = 'bezet'
+        this.toelichting = "door iets"
+        if (data.description) {
+            this.toelichting = "met "+data.description;
         }
-        else if (a <2) {
-            this.antwoord = "buiten";
-            this.toelichting = "Zijn auto is niet op zijn plek";
-        }
-        else {
-            this.antwoord = "ergens";
-            this.toelichting = "Deze dienst is nog offline";
-        }
+       }
+       else {
+        //vrij
+        this.set('entity.status','free');
+        this.antwoord = 'vrij';
+        this.toelichting = "Ga je gang"
+       }
     }
   });
 </script>

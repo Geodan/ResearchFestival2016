@@ -1,0 +1,83 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-zwaailicht">
+  <template>
+  <style>
+  paper-card {
+    width: 150px;
+    margin: 5px;
+  }
+  </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="Datastreams(35)/Observations"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+         <mqtt-publish 
+            auto
+            retained
+            topic="Datastreams(35)/Observations"
+            payload="{{payload}}"
+            qos="1"></mqtt-publish>   
+    </mqtt-connection>
+<paper-card  image$="{{image}}" on-tap="_tapped">
+   <div class="card-content" >
+   {{toelichting}}
+  </div>  
+</paper-card>
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-zwaailicht",
+    properties: {
+        lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        },
+        entity: {
+        	type: Object,
+        	notify: true,
+        	value: function(){
+        		return {
+        			location: 'zwaailicht',
+        			status: 'off'
+        		};
+        	}
+        }
+        
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+        this.image = "style/licht.png";
+        this.status = false;
+        this.payload = JSON.stringify({result:false});
+        this.toelichting = "zwaait niet";
+    },
+    _messageChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);
+        if(data.result) { 
+            this.image = 'style/licht.gif'
+            this.toelichting = "zwaait"
+            this.set('entity.status','on');
+        }
+        else {
+            this.image='style/licht.png'
+            this.toelichting = "zwaait niet"
+            this.set('entity.status','off');
+        }
+
+    },
+    _tapped:function(){
+        this.status=this.status?false:true;
+        this.payload = JSON.stringify({result:this.status});
+    }
+
+  });
+</script>
+</dom-module>

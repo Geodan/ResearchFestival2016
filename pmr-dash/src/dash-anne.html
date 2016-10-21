@@ -3,6 +3,12 @@
 <link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
 <dom-module id="dash-anne">
   <template>
+  <style>
+  paper-card {
+    width: 350px;
+    margin: 5px;
+  }
+  </style>
     <mqtt-connection auto url="ws://gost.geodan.nl:9001">
         <mqtt-subscription
             topic="hierisanne"
@@ -14,7 +20,7 @@
     </mqtt-connection>
 
     <paper-card class="white" heading$="{{antwoord}}" image="style/wia.png" alt$="{{antwoord}}">
-  <div class="card-content" style="max-width: 350px;">
+  <div class="card-content">
    {{toelichting}}
   </div>
 </paper-card>
@@ -49,8 +55,7 @@
      
     },
     _messageChanged:function (msg) {
-        var data = JSON.parse(msg.parsedPayload);
-        console.log(data)
+        var data = JSON.parse(msg.parsedPayload);        
         if(data.location!==null) {
             this.antwoord = 'Ja...';
             this.toelichting = 'hij is in '+data.location+' bezig met '+data.action;
