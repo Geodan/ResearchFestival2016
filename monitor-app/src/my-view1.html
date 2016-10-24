@@ -1,0 +1,107 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view1">
+  <template>
+    <style include="shared-styles">
+	:host {
+		display: block;
+		padding: 10px;
+	}
+	.avatar {
+	  display: inline-block;
+	  box-sizing: border-box;
+	  width: 40px;
+	  height: 40px;
+	  border-radius: 50%;
+	  background: var(--paper-amber-500);
+	}
+	.red {
+	  background-color: var(--paper-light-red-300);
+	}
+	.green {
+	  background-color: var(--paper-light-green-300);
+	}
+      
+      
+    </style>
+    <template is='dom-repeat' items=[[entities]]>
+		<paper-icon-item >
+		  <div class$=[[isvrij(item.status)]] item-icon></div>
+		  <paper-item-body two-line>
+			<div>[[item.name]]</div>
+			<div secondary>[[item.status]]</div>
+		  </paper-item-body>
+		  <paper-toggle-button checked={{item.notify}}></paper-toggle-button>
+		</paper-icon-item>
+	</template>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-view1',
+      properties: {
+      	  entities: {
+      	  	  type: Array
+      	  }
+      },
+      observers: [
+      	  '_entityChanged(entities.*)'
+      ],
+      _entityChanged: function(e){
+      	  if (e.path != 'entities'){
+      	  	  var idx = e.path.split(".")[1].replace('#','');
+      	  	  var item = this.entities[idx];
+      	  	  if (item.status == 'Vrij' && item.notify){
+      	  	  	  this.notify(item.name + ' is vrij','Rennen!!');
+      	  	  }
+      	  }
+      },
+      isvrij: function(status){
+      	  return (status=='Vrij')?'avatar green':'avatar red';
+      },
+      notify: function(header, body){
+      	function notifyMe() {
+		  // Let's check if the browser supports notifications
+		  if (!("Notification" in window)) {
+			alert("This browser does not support desktop notification");
+		  }
+		
+		  // Let's check whether notification permissions have already been granted
+		  else if (Notification.permission === "granted") {
+			// If it's okay let's create a notification
+			var notification = new Notification("Hi there!");
+		  }
+		
+		  // Otherwise, we need to ask the user for permission
+		  else if (Notification.permission !== 'denied') {
+			Notification.requestPermission(function (permission) {
+			  // If the user accepts, let's create a notification
+			  if (permission === "granted") {
+				var notification = new Notification("Hi there!");
+			  }
+			});
+		  }
+		
+		  // At last, if the user has denied notifications, and you 
+		  // want to be respectful there is no need to bother them any more.
+		}
+		notifyMe();
+      }
+    });
+  </script>
+</dom-module>
