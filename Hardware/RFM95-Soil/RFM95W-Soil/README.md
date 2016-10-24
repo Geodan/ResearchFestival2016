@@ -9,17 +9,16 @@ Connect the three moisture sensors as usual: VCC to VCC, GND to GND and AO to an
 The RFM95W is somewhat more difficult. Connect it as follows:
 
 
-RFM95W      3.3V Arduino
---------------------------
-
-NSS         10
-RST         9
-D0          2
-D1          5
-D2          6
-MOSI        11 (or MOSI equivalent on your arduino)
-MISO        12 (or MOSI equivalent on your arduino)
-SCK         13 (or MOSI equivalent on your arduino)
+|RFM95W |    3.3V Arduino                           |
+|-------|-------------------------------------------|
+|NSS    |    10                                     |
+|RST    |    9                                      |
+|D0     |    2                                      |
+|D1     |    5                                      |
+|D2     |    6                                      |
+|MOSI   |    11 (or MOSI equivalent on your arduino)|
+|MISO   |    12 (or MOSI equivalent on your arduino)|
+|SCK    |    13 (or MOSI equivalent on your arduino)|
 
 Some of these can also be change in the pin mapping in the software.
 
