@@ -9,14 +9,16 @@
 <link rel="import" href="dash-vierde.html">
 <link rel="import" href="dash-ibeacon.html">
 <link rel="import" href="dash-zwaailicht.html">
+<link rel="import" href="dash-alpr.html">
+<link rel="import" href="dash-frontcam.html">
 <dom-module id="pmr-dash-app">
-  <template>
-    <style>
+    <template>
+        <style>
       :host {
         display: block;
       }
 
-     
+
       #content {
         display: flex;
         flex-wrap: wrap;
@@ -26,56 +28,57 @@
 
       .col {
         flex: 1;
-       
+
       }
 
     </style>
-    <paper-toolbar>
-  <div class="title">Sensor dingen dash</div>
-  <div class$="{{anne}}">Anne</div>
-  <div class$="{{henk}}">Henk</div>
-  <div class$="{{frans}}">Vrolijke Frans</div>
-</paper-toolbar>
+        <paper-toolbar>
+            <div class="title">Sensor dingen dash</div>
+            <div class$="{{anne}}">Anne</div>
+            <div class$="{{henk}}">Henk</div>
+            <div class$="{{frans}}">Vrolijke Frans</div>
+        </paper-toolbar>
 
-<div id="content" >
+        <div id="content" >
 
-<div class="col md">
-<dash-anne class="card" anne={{anne}}></dash-anne>
-<dash-anne-desk class="card" anne-desk={{anne-desk}}></dash-anne-desk>
-<view-3d class="card" id="view3d1"
-      zwaailicht=[[zwaailicht]]
-      fussbal=[[vierde]]
-     ></view-3d>
-     
-</div>
-<div class="col sm">
- <dash-frans class="card" frans={{frans}}></dash-frans>
-</div>
-<div class="col xs">
-<dash-henk class="card"  henk={{henk}}></dash-henk>
-     <dash-vierde class="card" entity={{vierde}}></dash-vierde>
-      <dash-zwaailicht class="card" entity={{zwaailicht}}></dash-zwaailicht>
-        <dash-ibeacon class="card"></dash-ibeacon>
+            <div class="col md">
+                <dash-anne class="card" anne={{anne}}></dash-anne>
+                <dash-anne-desk class="card" anne-desk={{anne-desk}}></dash-anne-desk>
+                <view-3d class="card" id="view3d1"
+                         zwaailicht=[[zwaailicht]]
+                         fussbal=[[vierde]]
+                ></view-3d>
 
-</div>
-    
-    
-     
-   
-    
-    </div>
-  </template>
+            </div>
+            <div class="col sm">
+                <dash-frans class="card" frans={{frans}}></dash-frans>
+                <dash-alpr class="card" alpr={{alpr}}></dash-alpr>
+                <dash-frontcam class="card" frontcam={{frontcam}}></dash-frontcam>
+            </div>
+            <div class="col xs">
+                <dash-henk class="card"  henk={{henk}}></dash-henk>
+                <dash-vierde class="card" entity={{vierde}}></dash-vierde>
+                <dash-zwaailicht class="card" entity={{zwaailicht}}></dash-zwaailicht>
+                <dash-ibeacon class="card"></dash-ibeacon>
 
-  <script>
+            </div>
+
+
+
+
+
+        </div>
+    </template>
+
+    <script>
     Polymer({
 
       is: 'pmr-dash-app',
 
       properties: {
-        
+
       },
 
     });
   </script>
 </dom-module>
-
