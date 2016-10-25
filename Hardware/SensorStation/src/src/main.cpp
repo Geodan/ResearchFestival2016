@@ -20,14 +20,14 @@ Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 // Wifi
 #include <ESP8266WiFi.h>
 WiFiClient espClient;
-const char* ssid = "geodan";
-const char* password = "welkombijgeodan";
+const char* ssid = "Ziggo418DB";
+const char* password = "veldekekade3";
 
 // MQTT
 #include <PubSubClient.h>
 const char* mqtt_server = "gost.geodan.nl";
 const uint16_t mqqt_port = 1883;
-const unsigned long publishInterval = 1000 * 60; //Milliseconds
+const unsigned long publishInterval = 1000 * 240; //Milliseconds
 const char* mqtt_client_id = "BaseStation1";
 const String tempStream = "45";
 const String humidityStream = "46";
@@ -55,6 +55,9 @@ unsigned long lastScreenUpdateTime; // Used for refresh rate on screen
 unsigned long lastScreenRequestedTime; // Used for putting screen to sleep
 enum Screens { Temperature,Humidity,Pressure,Altitude,Wifi };
 Screens currentScreen = Wifi;
+
+//RGB
+
 
 // Values
 float emptyValue = -999;
@@ -87,7 +90,7 @@ void readConfig(){
   test.trim();
   displayReading("CONFIG", test);
   f.close();
-  delay(50000);
+  delay(5000);
 }
 
 void spiffsInit(){
@@ -308,6 +311,22 @@ void checkButton(){
   }
 }
 
+int redPin = 5;
+int greenPin = 4;
+int bluePin = 12;
+
+void setColor(int red, int green, int blue)
+{
+//  #ifdef COMMON_ANODE
+    red = 255 - red;
+    green = 255 - green;
+    blue = 255 - blue;
+//  #endif
+  digitalWrite(redPin, red);
+  digitalWrite(greenPin, green);
+  digitalWrite(bluePin, blue);
+}
+
 void setup() {
   lastDataPushTime = millis();
   Wire.begin(D3, D5);
@@ -324,11 +343,33 @@ void setup() {
   client.setServer(mqtt_server, mqqt_port);
 
   // TEST
-  spiffsInit();
-  readConfig();
+  //spiffsInit();
+  //readConfig();
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
 }
 
 void loop() {
+/*  Serial.println("red");
+  setColor(255, 0, 0);  // red
+ delay(10000);
+ Serial.println("green");
+ setColor(0, 255, 0);  // green
+ delay(10000);
+ Serial.println("blue");
+ setColor(0, 0, 255);  // blue
+ delay(10000);
+ Serial.println("yellow");
+ setColor(255, 255, 0);  // yellow
+ delay(4000);
+ Serial.println("purple");
+ setColor(80, 0, 80);  // purple
+ delay(4000);
+ Serial.println("aqua");
+ setColor(0, 255, 255);  // aqua
+ delay(4000);*/
+
   checkButton();
   // Try connecting to wifi if disconnected, make non blocking
   if (WiFi.status() != WL_CONNECTED){
