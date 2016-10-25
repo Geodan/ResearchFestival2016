@@ -1,0 +1,65 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-alpr">
+  <template>
+  <style>
+  paper-card {
+    width: 350px;
+    margin: 5px;
+  }
+  </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+        <mqtt-subscription
+            topic="alpr"
+            number-of-messages="Infinity"
+            last-message="{{lastMessage}}"
+            messages="{{messages}}"
+            subscribed="{{subscribed}}">
+        </mqtt-subscription>
+    </mqtt-connection>
+
+    <!--paper-card class="white" heading$="{{lp}}" image="style/anne-desk.png" alt$="{{lp}}"-->
+    <paper-card class="white" heading$="" image$={{imageurl}} alt$="{{lp}}">
+  <div class="card-content">
+    <!--img src={{imageurl}}</img-->
+    {{lp}}
+  </div>
+</paper-card>
+
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-alpr",
+    properties: {
+        lastMessage: {
+            type: Object,
+            notify: true,
+            observer: '_messageChanged'
+        },
+        lp: {
+            type: String,
+            value: 'JR475X'
+        },
+        imageurl: {
+            type: String,
+            value: 'http://192.168.40.8/10252016_130131.jpg'
+        }
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+     
+    },
+    _messageChanged:function (msg) {
+        var data = JSON.parse(msg.parsedPayload);        
+        if(data.lp!==null && data.image!=null) {
+            if (data.lp && data.image) {
+                this.lp = data.lp
+                this.imageurl = data.image;
+            }
+        }
+    }
+  });
+</script>
+</dom-module>
