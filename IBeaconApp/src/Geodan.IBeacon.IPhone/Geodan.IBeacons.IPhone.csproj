@@ -93,6 +93,7 @@
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
+    <InterfaceDefinition Include="iOSBeaconViewController.xib" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

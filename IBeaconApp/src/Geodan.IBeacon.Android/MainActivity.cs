@@ -5,6 +5,7 @@ using Android.Widget;
 using RadiusNetworks.IBeaconAndroid;
 using System;
 using Android.Content;
+using Android.Bluetooth;
 
 namespace Geodan.IBeacons.Android
 {
@@ -30,6 +31,24 @@ namespace Geodan.IBeacons.Android
 
         public MainActivity()
         {
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+            if (mBluetoothAdapter == null)
+            {
+                RunOnUiThread(() =>
+                {
+                    showAlert("Bluetooth", "No bluetooth adapater available");
+                });
+            }
+            else
+            {
+                if (!mBluetoothAdapter.IsEnabled)
+                {
+                    RunOnUiThread(() =>
+                    {
+                        showAlert("Bluetooth", "Please activate bluetooth");
+                    });
+                }
+            }
             beaconMgr = IBeaconManager.GetInstanceForApplication(this);
 
             monitorNotifier = new MonitorNotifier();
@@ -37,6 +56,19 @@ namespace Geodan.IBeacons.Android
 
             rangeNotifier = new RangeNotifier();
             rangingRegion = new Region(BEACON_ID, UUI, null, null);
+        }
+
+        private void showAlert(string Tile, string Message)
+        {
+            var alert = new AlertDialog.Builder(this);
+            alert.SetTitle(Title);
+            alert.SetMessage(Message);
+            alert.SetPositiveButton("Ok", (senderAlert, args) => {
+                Finish();
+            });
+            var dialog = alert.Create();
+            dialog.Show();
+
         }
 
         private string GetLocation(int major)
@@ -90,7 +122,7 @@ namespace Geodan.IBeacons.Android
 
             rangeNotifier.DidRangeBeaconsInRegionComplete += RangingBeaconsInRegion;
 
-            Button button = FindViewById<Button>(Resource.Id.button1);
+            var button = FindViewById<Button>(Resource.Id.button1);
             button.Click += delegate
             {
                 name = editTextName.Text;
