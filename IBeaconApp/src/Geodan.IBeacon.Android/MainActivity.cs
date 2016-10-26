@@ -6,20 +6,15 @@ using RadiusNetworks.IBeaconAndroid;
 using System;
 using Android.Content;
 using Android.Bluetooth;
+using Geodan.IBeacons.Core;
 
 namespace Geodan.IBeacons.Android
 {
     [Activity(Label = "Geodan IBeacon Tracker", MainLauncher = true)]
     public class MainActivity : Activity, IBeaconConsumer
     {
-        const string UUI = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
-        const int blauwe = 46572;
-        const int paarse = 25426;
-        const int groene = 29299;
 
         const string BEACON_ID = "iOSBeacon";
-        int datastreamid = 36;
-        string name = "Bert";
 
         IBeaconManager beaconMgr;
         MonitorNotifier monitorNotifier;
@@ -52,10 +47,10 @@ namespace Geodan.IBeacons.Android
             beaconMgr = IBeaconManager.GetInstanceForApplication(this);
 
             monitorNotifier = new MonitorNotifier();
-            monitoringRegion = new Region(BEACON_ID, UUI, null, null);
+            monitoringRegion = new Region(BEACON_ID, Settings.UUI, null, null);
 
             rangeNotifier = new RangeNotifier();
-            rangingRegion = new Region(BEACON_ID, UUI, null, null);
+            rangingRegion = new Region(BEACON_ID, Settings.UUI, null, null);
         }
 
         private void showAlert(string Tile, string Message)
@@ -68,7 +63,6 @@ namespace Geodan.IBeacons.Android
             });
             var dialog = alert.Create();
             dialog.Show();
-
         }
 
         private string GetLocation(int major)
@@ -76,13 +70,13 @@ namespace Geodan.IBeacons.Android
             var res = string.Empty;
             switch (major)
             {
-                case blauwe:
+                case Settings.Blauwe:
                     res = "PK Keuken";
                     break;
-                case groene:
+                case Settings.Groene:
                     res = "PK 2e";
                     break;
-                case paarse:
+                case Settings.Paarse:
                     res = "PK Balie";
                     break;
             }
@@ -125,10 +119,10 @@ namespace Geodan.IBeacons.Android
             var button = FindViewById<Button>(Resource.Id.button1);
             button.Click += delegate
             {
-                name = editTextName.Text;
+                Settings.name = editTextName.Text;
                 var prefs = Application.Context.GetSharedPreferences("MyApp1", FileCreationMode.Private);
                 var prefEditor = prefs.Edit();
-                prefEditor.PutString("username", name);
+                prefEditor.PutString("username", Settings.name);
                 prefEditor.Commit();
 
                 editTextName.ClearFocus();
@@ -186,14 +180,13 @@ namespace Geodan.IBeacons.Android
 
         void ShowMessage(string message, string description, string location)
         {
-            Gost.PostToGost(datastreamid, name + "_" + message + "_" + location);
+            Gost.PostToGost(Settings.datastreamid, Settings.name + "_" + message + "_" + location);
             RunOnUiThread(() =>
             {
                 beaconStatusLabel.Text = message + ": " + description + ", " + location;
                 beaconStatusUpdateTime.Text = DateTime.Now.ToString();
             });
         }
-
 
         protected override void OnDestroy()
         {
@@ -205,7 +198,8 @@ namespace Geodan.IBeacons.Android
             base.OnResume();
             if (beaconMgr.IsBound(this))
             {
-                beaconMgr.SetBackgroundMode(this, false);
+                // try not to use backgroundmode for now
+                // beaconMgr.SetBackgroundMode(this, false);
             }
         }
 
@@ -215,9 +209,9 @@ namespace Geodan.IBeacons.Android
 
             if (beaconMgr.IsBound(this))
             {
-                beaconMgr.SetBackgroundMode(this, true);
+                // try not to use backgroundmode for now
+                // beaconMgr.SetBackgroundMode(this, true);
             }
-
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 
 namespace Geodan.IBeacons.Android
 {
-
     public static class Gost
     {
         public static void PostToGost(int datastreamid, string Message)

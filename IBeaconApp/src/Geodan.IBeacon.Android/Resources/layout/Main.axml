@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
     <TextView
-        android:text="Name1:"
+        android:text="Name:"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
