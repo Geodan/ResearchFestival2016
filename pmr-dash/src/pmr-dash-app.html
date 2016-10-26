@@ -9,6 +9,9 @@
 <link rel="import" href="dash-vierde.html">
 <link rel="import" href="dash-ibeacon.html">
 <link rel="import" href="dash-zwaailicht.html">
+<link rel="import" href="dash-alpr.html">
+<link rel="import" href="dash-frontcam.html">
+<link rel="import" href="dash-linegraph.html">
 <dom-module id="pmr-dash-app">
   <template>
     <style>
@@ -46,10 +49,55 @@
       zwaailicht=[[zwaailicht]]
       fussbal=[[vierde]]
      ></view-3d>
-     
+</div>
+<div class="col sm">
+    <dash-linegraph class="card"
+                    sensor_things_url="gost.geodan.nl"
+                    datastream=3
+                    max_entries=40
+                    heading="PK TEMPERATURE"
+                    heading_color="#dfdfdf"
+                    value_symbol="°C"
+                    line_thickness="2.1"
+                    line_color="#d61151"
+                    card_color="#1B4258"
+                    grid_color="#153446"
+                    grid_text_color="#88969E">
+    </dash-linegraph>
+
+    <dash-linegraph class="card"
+                    sensor_things_url="gost.geodan.nl"
+                    datastream=4
+                    max_entries=30
+                    heading="PK HUMIDITY"
+                    heading_color="#dfdfdf"
+                    value_symbol="%"
+                    line_thickness="3"
+                    line_color="#0080ff"
+                    card_color="#990000"
+                    grid_color="#00264c"
+                    grid_text_color="#7fbfff">
+    </dash-linegraph>
+
+    <dash-linegraph class="card"
+                    sensor_things_url="gost.geodan.nl"
+                    datastream=6
+                    max_entries=40
+                    heading="PK CO2"
+                    heading_color="#dfdfdf"
+                    value_symbol=" PPM"
+                    line_thickness="2.2"
+                    line_color="#e53939"
+                    card_color="#191919"
+                    grid_color="#153446"
+                    grid_text_color="#b22c2c">
+    </dash-linegraph>
 </div>
 <div class="col sm">
  <dash-frans class="card" frans={{frans}}></dash-frans>
+ <dash-alpr class="card" alpr={{alpr}}></dash-alpr>
+  <dash-frontcam class="card" frontcam={{frontcam}}></dash-frontcam>
+
 </div>
 <div class="col xs">
 <dash-henk class="card"  henk={{henk}}></dash-henk>
@@ -78,4 +126,3 @@
     });
   </script>
 </dom-module>
-

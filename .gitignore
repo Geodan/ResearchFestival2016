@@ -7,3 +7,4 @@ node_modules
 /Hardware/Zwaailicht/src/.gitignore
 bower_components
 *.*~
+*.log

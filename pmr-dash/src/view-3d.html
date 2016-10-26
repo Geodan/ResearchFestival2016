@@ -78,7 +78,7 @@
 				</appearance>
 			</shape>
 		 </transform>
-		 <inline id='building' nameSpaceName="geodanpk" mapDEFToID="true" url='http://research.geodan.nl/service/geodan3d?set=geodan_pk'></inline>
+		 <inline id='building' load=true render=true nameSpaceName="geodanpk" mapDEFToID="true" url='http://research.geodan.nl/service/geodan3d?set=geodan_pk'></inline>
 		 <!--
 		 <transform id='geodan_pk'></transform>
 		 <x3d-layer 
@@ -197,6 +197,7 @@ Polymer({
 
     },
 	_mapChanged: function(map){
+		var self = this;
 		this._flyTo([122689, 483927]);
 		map.scene.select("#viewpoint").attr('zNear',1)
 			.attr('centerOfRotation','122689,483926 12')
@@ -204,8 +205,8 @@ Polymer({
 			.attr('orientation','0.5059 0.4662 0.7257 1.9445');
 		map.scene.select("navInfo").attr('speed',0.001).attr('transitionTime','1.0');
 		
-		map.scene.select('#building').node().onload = function(d){
-			this.rerender(d.target);
+		map.scene.select('#building').node().onload = function(){
+			self.rerender(this);
 		};
 
 	},

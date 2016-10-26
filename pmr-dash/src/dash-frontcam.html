@@ -1,0 +1,35 @@
+<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+
+<dom-module id="dash-frontcam">
+  <template>
+  <style>
+  paper-card {
+    width: 350px;
+    margin: 5px;
+  }
+  </style>
+ 
+    <!--paper-card class="white" heading$="{{lp}}" image="style/anne-desk.png" alt$="{{lp}}"-->
+    <paper-card class="white" heading$="" image="http://192.168.24.198/mjpg/video.mjpg"  alt$="">
+  <div class="card-content">
+    <!--img src={{imageurl}}</img-->
+        Live video stream front cam
+  </div>
+</paper-card>
+
+</template>
+<script>
+  // register a new element called proto-element
+  Polymer({
+    is: "dash-frontcam",
+    properties: {
+        
+    },
+    // add a callback to the element's prototype
+    ready: function() {
+     
+    }
+  });
+</script>
+</dom-module>
