@@ -32,7 +32,7 @@ namespace Geodan.IBeacons.Android
             {
                 RunOnUiThread(() =>
                 {
-                    showAlert("Bluetooth", "No bluetooth adapater available");
+                    showAlert("Bluetooth", "No bluetooth available");
                 });
             }
             else
