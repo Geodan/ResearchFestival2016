@@ -23,6 +23,7 @@ namespace Geodan.IBeacons.Android
         Region rangingRegion;
         TextView beaconStatusLabel;
         TextView beaconStatusUpdateTime;
+        string lastKnownRegion = null;
 
         public MainActivity()
         {
@@ -63,24 +64,6 @@ namespace Geodan.IBeacons.Android
             });
             var dialog = alert.Create();
             dialog.Show();
-        }
-
-        private string GetLocation(int major)
-        {
-            var res = string.Empty;
-            switch (major)
-            {
-                case Settings.Blauwe:
-                    res = "PK Keuken";
-                    break;
-                case Settings.Groene:
-                    res = "PK 2e";
-                    break;
-                case Settings.Paarse:
-                    res = "PK Balie";
-                    break;
-            }
-            return res;
         }
 
         public void OnIBeaconServiceConnect()
@@ -150,7 +133,14 @@ namespace Geodan.IBeacons.Android
 
         void ExitedRegion(object sender, MonitorEventArgs e)
         {
-            ShowMessage("0", "Exit region", "onbekend");
+            if (String.IsNullOrEmpty(lastKnownRegion))
+            {
+                ShowMessage("0", "Exit region", "onbekend");
+            }
+            else
+            {
+                ShowMessage("0", "Exit region", lastKnownRegion);
+            }
         }
 
         void RangingBeaconsInRegion(object sender, RangeEventArgs e)
@@ -159,7 +149,8 @@ namespace Geodan.IBeacons.Android
             {
                 var beacon = e.Beacons.FirstOrDefault();
                 var proximity = beacon.Proximity;
-                var loc = GetLocation(beacon.Major);
+                var loc = GeodanBeacons.GetLocation(beacon.Major);
+                lastKnownRegion = loc;
                 switch ((ProximityType)beacon.Proximity)
                 {
                     case ProximityType.Immediate:
