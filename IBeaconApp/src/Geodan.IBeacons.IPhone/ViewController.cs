@@ -75,6 +75,8 @@ namespace Geodan.IBeacons.IPhone
             var locationMgr = new CLLocationManager();
             locationMgr.RequestWhenInUseAuthorization();
 
+            // eurghh http://stackoverflow.com/questions/20124443/ibeacon-get-major-and-minor-only-looking-for-uuid
+
             locationMgr.RegionEntered += (object sender, CLRegionEventArgs e) =>
             {
                 // have to check for e.Region.Identifier?
