@@ -5,7 +5,6 @@ using Foundation;
 using Geodan.IBeacons.Android;
 using Geodan.IBeacons.Core;
 using System;
-using System.Threading;
 using UIKit;
 
 namespace Geodan.IBeacons.IPhone
@@ -27,7 +26,6 @@ namespace Geodan.IBeacons.IPhone
         private void showAlert(string Title, string Message)
         {
             var _error = new UIAlertView(Title, Message, null, "Ok", null);
-            // _error.Clicked += (sender, buttonArgs) => Thread.CurrentThread.Abort(); ;
             _error.Show();
         }
 
@@ -52,16 +50,14 @@ namespace Geodan.IBeacons.IPhone
 
             lblStatus.Text = "loaded!";
             lblTime.Text = DateTime.Now.ToString();
-            var username = defaults.StringForKey("username");
             var usernameStored = defaults.StringForKey("username");
 
-            if (!String.IsNullOrEmpty(usernameStored))
+            if (!string.IsNullOrEmpty(usernameStored))
             {
                 lblName.Text = usernameStored;
                 lblName.ResignFirstResponder();
                 Settings.name = usernameStored;
             }
-
 
             var uuid = new NSUuid(Settings.UUI);
             var beaconId = "iOSBeacon";
@@ -73,6 +69,7 @@ namespace Geodan.IBeacons.IPhone
             };
 
             var locationMgr = new CLLocationManager();
+            locationMgr.RequestAlwaysAuthorization();
             locationMgr.RequestWhenInUseAuthorization();
 
             // eurghh http://stackoverflow.com/questions/20124443/ibeacon-get-major-and-minor-only-looking-for-uuid
@@ -149,5 +146,4 @@ namespace Geodan.IBeacons.IPhone
             }
         }
     }
-
 }
