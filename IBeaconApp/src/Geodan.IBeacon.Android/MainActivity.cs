@@ -154,13 +154,13 @@ namespace Geodan.IBeacons.Android
                 switch ((ProximityType)beacon.Proximity)
                 {
                     case ProximityType.Immediate:
-                        ShowMessage("1", "Beacon is immediate", loc);
+                        ShowMessage("1", "Beacon is immediate (cms)", loc);
                         break;
                     case ProximityType.Near:
-                        ShowMessage("1", "Beacon is near", loc);
+                        ShowMessage("1", "Beacon is near (meters)", loc);
                         break;
                     case ProximityType.Far:
-                        ShowMessage("1", "Beacon is far", loc);
+                        ShowMessage("1", "Beacon is far (few meters)", loc);
                         break;
                     case ProximityType.Unknown:
                         ShowMessage("1", "Beacon is unknown", loc);
