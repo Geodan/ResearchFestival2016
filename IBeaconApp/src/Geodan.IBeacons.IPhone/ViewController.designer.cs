@@ -16,10 +16,6 @@ namespace Geodan.IBeacons.IPhone
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIButton btnName { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UITextField lblName { get; set; }
 
         [Outlet]
@@ -32,11 +28,6 @@ namespace Geodan.IBeacons.IPhone
 
         void ReleaseDesignerOutlets ()
         {
-            if (btnName != null) {
-                btnName.Dispose ();
-                btnName = null;
-            }
-
             if (lblName != null) {
                 lblName.Dispose ();
                 lblName = null;
