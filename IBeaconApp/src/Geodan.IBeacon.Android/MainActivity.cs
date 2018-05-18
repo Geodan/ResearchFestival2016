@@ -7,26 +7,28 @@ using System;
 using Android.Content;
 using Android.Bluetooth;
 using Geodan.IBeacons.Core;
+using Android.Util;
 
 namespace Geodan.IBeacons.Android
 {
-    [Activity(Label = "Geodan IBeacon Tracker", MainLauncher = true)]
+    [Activity(Label = "Geodan IBeacon Tracker 0.1", MainLauncher = true)]
     public class MainActivity : Activity, IBeaconConsumer
     {
 
         const string BEACON_ID = "iOSBeacon";
 
         IBeaconManager beaconMgr;
-        MonitorNotifier monitorNotifier;
         RangeNotifier rangeNotifier;
-        Region monitoringRegion;
+        MonitorNotifier monitorNotifier;
         Region rangingRegion;
+        Region monitoringRegion;
         TextView beaconStatusLabel;
         TextView beaconStatusUpdateTime;
         string lastKnownRegion = null;
 
         public MainActivity()
         {
+            Log.Info("geodan main", "startup");
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.DefaultAdapter;
             if (mBluetoothAdapter == null)
             {
@@ -68,15 +70,14 @@ namespace Geodan.IBeacons.Android
 
         public void OnIBeaconServiceConnect()
         {
-            beaconMgr.SetMonitorNotifier(monitorNotifier);
             beaconMgr.SetRangeNotifier(rangeNotifier);
-
-            beaconMgr.StartMonitoringBeaconsInRegion(monitoringRegion);
             beaconMgr.StartRangingBeaconsInRegion(rangingRegion);
         }
 
         protected override void OnCreate(Bundle bundle)
         {
+            Log.Info("geodan main", "OnCreate");
+
             base.OnCreate(bundle);
 
             SetContentView(Resource.Layout.Main);
@@ -96,7 +97,6 @@ namespace Geodan.IBeacons.Android
 
             monitorNotifier.EnterRegionComplete += EnteredRegion;
             monitorNotifier.ExitRegionComplete += ExitedRegion;
-
             rangeNotifier.DidRangeBeaconsInRegionComplete += RangingBeaconsInRegion;
 
             var button = FindViewById<Button>(Resource.Id.button1);
@@ -114,17 +114,15 @@ namespace Geodan.IBeacons.Android
 
         void CloseApp()
         {
-            base.OnDestroy();
-
+            rangeNotifier.DidRangeBeaconsInRegionComplete -= RangingBeaconsInRegion;
+            beaconMgr.StopRangingBeaconsInRegion(rangingRegion);
             monitorNotifier.EnterRegionComplete -= EnteredRegion;
             monitorNotifier.ExitRegionComplete -= ExitedRegion;
 
-            rangeNotifier.DidRangeBeaconsInRegionComplete -= RangingBeaconsInRegion;
-
-            beaconMgr.StopMonitoringBeaconsInRegion(monitoringRegion);
-            beaconMgr.StopRangingBeaconsInRegion(rangingRegion);
             beaconMgr.UnBind(this);
+            base.OnDestroy();
         }
+
 
         void EnteredRegion(object sender, MonitorEventArgs e)
         {
@@ -143,10 +141,15 @@ namespace Geodan.IBeacons.Android
             }
         }
 
+
         void RangingBeaconsInRegion(object sender, RangeEventArgs e)
         {
+            Log.Info("geodan main", "RangingBeaconsInMain called");
+
             if (e.Beacons.Count > 0)
             {
+                Log.Info("geodan main", "Number of beacons: "+ e.Beacons.Count);
+
                 var beacon = e.Beacons.FirstOrDefault();
                 var proximity = beacon.Proximity;
                 var loc = GeodanBeacons.GetLocation(beacon.Major);
@@ -154,13 +157,13 @@ namespace Geodan.IBeacons.Android
                 switch ((ProximityType)beacon.Proximity)
                 {
                     case ProximityType.Immediate:
-                        ShowMessage("1", "Beacon is immediate", loc);
+                        ShowMessage("1", "Beacon is immediate (cm's)", loc);
                         break;
                     case ProximityType.Near:
-                        ShowMessage("1", "Beacon is near", loc);
+                        ShowMessage("1", "Beacon is near (meters)", loc);
                         break;
                     case ProximityType.Far:
-                        ShowMessage("1", "Beacon is far", loc);
+                        ShowMessage("1", "Beacon is far (few meters)", loc);
                         break;
                     case ProximityType.Unknown:
                         ShowMessage("1", "Beacon is unknown", loc);
@@ -171,7 +174,17 @@ namespace Geodan.IBeacons.Android
 
         void ShowMessage(string message, string description, string location)
         {
-            Gost.PostToGost(Settings.datastreamid, Settings.name + "_" + message + "_" + location);
+            Log.Info("geodan main", $"Post to GOST: " + Settings.name + "_" + message + "_" + location);
+
+            try
+            {
+                Gost.PostToGost(Settings.datastreamid, Settings.name + "_" + message + "_" + location);
+            }
+            catch(Exception ex)
+            {
+                message += " (Post error)";
+                Log.Info("geodan main", "Fout bij posten: " + ex.ToString());
+            }
             RunOnUiThread(() =>
             {
                 beaconStatusLabel.Text = message + ": " + description + ", " + location;
@@ -181,28 +194,9 @@ namespace Geodan.IBeacons.Android
 
         protected override void OnDestroy()
         {
+            Log.Info("geodan main", "Close App called");
+
             CloseApp();
-        }
-
-        protected override void OnResume()
-        {
-            base.OnResume();
-            if (beaconMgr.IsBound(this))
-            {
-                // try not to use backgroundmode for now
-                // beaconMgr.SetBackgroundMode(this, false);
-            }
-        }
-
-        protected override void OnPause()
-        {
-            base.OnPause();
-
-            if (beaconMgr.IsBound(this))
-            {
-                // try not to use backgroundmode for now
-                // beaconMgr.SetBackgroundMode(this, true);
-            }
         }
     }
 }
