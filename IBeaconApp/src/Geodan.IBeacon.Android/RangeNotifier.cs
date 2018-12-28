@@ -22,9 +22,7 @@ namespace Geodan.IBeacons.Android
 
 		void OnDidRangeBeaconsInRegion (ICollection<IBeacon> beacons, Region region)
 		{
-			if (DidRangeBeaconsInRegionComplete != null) {
-				DidRangeBeaconsInRegionComplete (this, new RangeEventArgs { Beacons = beacons, Region = region });
-			}
-		}
+            DidRangeBeaconsInRegionComplete?.Invoke(this, new RangeEventArgs { Beacons = beacons, Region = region });
+        }
 	}
 }

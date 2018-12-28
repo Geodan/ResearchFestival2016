@@ -9,7 +9,8 @@
     "app-route": "*",
     "paper-elements": "~1",
     "iron-elements": "~1",
-    "x3d-elements": "https://github.com/GeodanElements/x3d-elements.git"
+    "x3d-elements": "https://github.com/GeodanElements/x3d-elements.git",
+    "x3dom": "^1.7.1"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#~1",

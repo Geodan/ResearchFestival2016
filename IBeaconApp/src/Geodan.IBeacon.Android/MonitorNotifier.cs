@@ -33,23 +33,17 @@ namespace Geodan.IBeacons.Android
 
 		void OnDetermineStateForRegionComplete ()
 		{
-			if (DetermineStateForRegionComplete != null) {
-				DetermineStateForRegionComplete (this, new MonitorEventArgs ());
-			}
-		}
+            DetermineStateForRegionComplete?.Invoke(this, new MonitorEventArgs());
+        }
 
 		void OnEnterRegionComplete ()
 		{
-			if (EnterRegionComplete != null) {
-				EnterRegionComplete (this, new MonitorEventArgs ());
-			}
-		}
+            EnterRegionComplete?.Invoke(this, new MonitorEventArgs());
+        }
 
 		void OnExitRegionComplete ()
 		{
-			if (ExitRegionComplete != null) {
-				ExitRegionComplete (this, new MonitorEventArgs ());
-			}
-		}
+            ExitRegionComplete?.Invoke(this, new MonitorEventArgs());
+        }
 	}
 }

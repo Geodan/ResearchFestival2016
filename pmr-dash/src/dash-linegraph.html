@@ -1,4 +1,4 @@
-<link rel="import"  href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-request.html">
@@ -9,17 +9,18 @@
     ToDo:
     - large numbers on y axis are getting cut-off
     - let mqtt use the host from the properties
+    - get all relevant datastream information from a sensorthings server and show in popup when heading is clicked
     - more configurable css
     - configurable point plot
     - hover with values on line
-    - fill space below line + configurable color
+    - fill space below line + configurable color (D3 area)
     - set alert value < and > -> flashing alert
     - set width and height of card from element
     - create grid with d3 that follow the ticks instead of a self drawn svg
 -->
 
 <dom-module id="dash-linegraph">
-  <template>
+    <template>
       <style>
           paper-card {
             width: 350px;
@@ -161,294 +162,317 @@
         </div>
     </paper-card>
 </template>
-<script>
-    Polymer({
-        is: "dash-linegraph",
-        properties: {
-            id: {
-                type: String,
-                notify: true
+    <script>
+        Polymer({
+            is: "dash-linegraph",
+            properties: {
+                id: {
+                    type: String,
+                    notify: true
+                },
+                values: {
+                    type: Object,
+                    notify: true
+                },
+                sensor_things_url: {
+                    type: String,
+                    value: "gost.geodan.nl"
+                },
+                datastream: {
+                    type: Number,
+                    observer: 'datastreamChanged'
+                },
+                heading: {
+                    type: String,
+                    notify: true
+                },
+                value_symbol: {
+                    type: String,
+                    notify: true
+                },
+                latest_value: {
+                    type: String,
+                    notify: true
+                },
+                latest_date: {
+                    type: String,
+                    notify: true
+                },
+                latest_time: {
+                    type: String,
+                    notify: true
+                },
+                heading_color: {
+                    type: String
+                },
+                line_color: {
+                    type: String
+                },
+                line_thickness: {
+                    type: String
+                },
+                grid_color: {
+                    type: String
+                },
+                grid_text_color: {
+                    type: String
+                },
+                card_color: {
+                    type: String
+                },
+                show_grid_x: {
+                    type: Boolean,
+                    notify: true
+                },
+                max_entries: {
+                    type: Number,
+                    value: 20
+                },
+                name: {
+                    type: String,
+                    notify: false
+                },
+                rest_response: {
+                    type: String
+                },
+                lastMessage: {
+                    type: String,
+                    notify: true,
+                    observer: 'newMessage'
+                },
+                width: {
+                    type: Number
+                },
+                height: {
+                    type: Number
+                },
+                numberOfTicks: {
+                    type: Number,
+                    value: 6
+                },
+                x: {
+                    type: Object
+                },
+                y: {
+                    type: Object
+                },
+                xAxis: {
+                    type: Object
+                },
+                yAxis: {
+                    type: Object
+                },
+                valueLine: {
+                    type: Object
+                }
+                // Add graph fill on/off
             },
-            values: {
-                type: Object,
-                notify: true
+            ready: function() {
+                this.id = "chart" + this.guid();
+                this.values = [];
             },
-            sensor_things_url:{
-                type: String,
-                value: "gost.geodan.nl"
-            },
-            datastream: {
-                type: Number,
-                observer: 'datastreamChanged'
-            },
-            heading: {
-                type: String,
-                notify: true
-            },
-            value_symbol: {
-                type: String,
-                notify: true
-            },
-            latest_value: {
-                type: String,
-                notify: true
-            },
-            latest_date: {
-                type: String,
-                notify: true
-            },
-            latest_time: {
-                type: String,
-                notify: true
-            },
-            heading_color: {
-                type: String
-            },
-            line_color: {
-                type: String
-            },
-            line_thickness:{
-                type: String
-            },
-            grid_color: {
-                type: String
-            },
-            grid_text_color: {
-                type: String
-            },
-            card_color: {
-                type: String
-            },
-            show_grid_x: {
-                type: Boolean,
-                notify: true
-            },
-            max_entries: {
-                type: Number,
-                value: 20
-            },
-            name: {
-                type: String,
-                notify: false
-            },
-            rest_response: {
-                type: String
-            },
-            lastMessage: {
-                type: String,
-                notify: true,
-                observer: 'newMessage'
-            },
-            width: {
-                type: Number
-            },
-            height: {
-                type: Number
-            },
-            numberOfTicks: {
-                type: Number,
-                value: 6
-            },
-            x: {
-                type: Object
-            },
-            y: {
-                type: Object
-            },
-            xAxis: {
-                type: Object
-            },
-            yAxis: {
-                type: Object
-            },
-            valueLine: {
-                type: Object
-            }
-            // Add graph fill on/off
-        },
-        ready: function() {
-            this.id = "chart" + this.guid();
-            this.values = [];
-        },
 
-        // createGraph initialised a new D3 graph and adds it to the card
-        createGraph: function () {
-            var element =  this.$$("#" + this.id);
-            var svg = d3.select("#" + this.id),
-                margin = {top: 5, right: 8, bottom: 25, left: 28},
-                width = element.getBoundingClientRect().width - margin.left - margin.right,
-                height = element.getBoundingClientRect().height - margin.top - margin.bottom,
-                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            // createGraph initialised a new D3 graph and adds it to the card
+            createGraph: function() {
+                var element = this.$$("#" + this.id);
+                var svg = d3.select("#" + this.id),
+                    margin = {
+                        top: 5,
+                        right: 8,
+                        bottom: 25,
+                        left: 28
+                    },
+                    width = element.getBoundingClientRect().width - margin.left - margin.right,
+                    height = element.getBoundingClientRect().height - margin.top - margin.bottom,
+                    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            this.width = element.getBoundingClientRect().width - margin.left - margin.right;
-            this.height = element.getBoundingClientRect().height - margin.top - margin.bottom;
-            this.x = d3.scaleTime().range([0, width]);
-            this.y = d3.scaleLinear().range([height, 0]);
-            this.xAxis = d3.axisBottom(this.x).ticks(this.numberOfTicks);
-            this.yAxis = d3.axisLeft(this.y).ticks(this.numberOfTicks);
-            var x = this.x;
-            var y = this.y;
-            this.valueLine = d3.line().x(function(d) { return x(d.x); }).y(function(d) { return y(d.y); });
+                this.width = element.getBoundingClientRect().width - margin.left - margin.right;
+                this.height = element.getBoundingClientRect().height - margin.top - margin.bottom;
+                this.x = d3.scaleTime().range([0, width]);
+                this.y = d3.scaleLinear().range([height, 0]);
+                this.xAxis = d3.axisBottom(this.x).ticks(this.numberOfTicks);
+                this.yAxis = d3.axisLeft(this.y).ticks(this.numberOfTicks);
+                var x = this.x;
+                var y = this.y;
+                this.valueLine = d3.line().x(function(d) {
+                    return x(d.x);
+                }).y(function(d) {
+                    return y(d.y);
+                });
 
-            this.x.domain(d3.extent(this.values, function(d) { return d.x; }));
-            this.y.domain(d3.extent(this.values, function(d) { return d.y; }));
+                this.x.domain(d3.extent(this.values, function(d) {
+                    return d.x;
+                }));
+                this.y.domain(d3.extent(this.values, function(d) {
+                    return d.y;
+                }));
 
-            /*
+                /*
 
-            g.append("defs")
-                    .append("pattern")
-                        .attr("id", "gridPattern")
-                        .attr("width", 20)
-                        .attr("height", 20)
-                        .attr("patternUnits", "userSpaceOnUse")
-                        .append("path")
-                            .attr("d", "M 20 0 L 0 0 0 20")
-                            .attr("class", "axisGrid");
-            */
+                g.append("defs")
+                        .append("pattern")
+                            .attr("id", "gridPattern")
+                            .attr("width", 20)
+                            .attr("height", 20)
+                            .attr("patternUnits", "userSpaceOnUse")
+                            .append("path")
+                                .attr("d", "M 20 0 L 0 0 0 20")
+                                .attr("class", "axisGrid");
+                */
 
-            g.append("rect")
+                g.append("rect")
                     .attr("width", this.width)
                     .attr("height", this.height)
 
-                    .attr("fill", "url(#gridPattern)");
+                .attr("fill", "url(#gridPattern)");
 
-            g.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(this.x).ticks(this.numberOfTicks));
+                g.append("g")
+                    .attr("class", "axis axis--x")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(d3.axisBottom(this.x).ticks(this.numberOfTicks));
 
-            g.append("g")
-                .attr("class", "axis axis--y")
-                .call(d3.axisLeft(this.y))
-                .append("text")
+                g.append("g")
+                    .attr("class", "axis axis--y")
+                    .call(d3.axisLeft(this.y))
+                    .append("text")
                     .attr("fill", "#000")
                     .attr("transform", "rotate(-90)")
                     .attr("y", 6)
                     .attr("dy", "0.71em")
                     .style("text-anchor", "end");
 
-            g.append("path")
-                .attr("class", "line")
-                .attr("d", this.valueLine(this.values));
-        },
+                g.append("path")
+                    .attr("class", "line")
+                    .attr("d", this.valueLine(this.values));
+            },
 
-        // datastreamChanged is called when the user set a datastream id
-        datastreamChanged: function(id){
-            this.topic = 'Datastreams('+id+')/Observations';
-        },
+            // datastreamChanged is called when the user set a datastream id
+            datastreamChanged: function(id) {
+                this.topic = 'Datastreams(' + id + ')/Observations';
+            },
 
-        // newMessage receives the latest MQTT message containing a new observation
-        newMessage: function (msg) {
-            var data = JSON.parse(msg.parsedPayload);
-            this.values.unshift({ "x": new Date(data.phenomenonTime), "y": data.result});
+            // newMessage receives the latest MQTT message containing a new observation
+            newMessage: function(msg) {
+                var data = JSON.parse(msg.parsedPayload);
+                this.values.unshift({
+                    "x": new Date(data.phenomenonTime),
+                    "y": data.result
+                });
 
-            if(this.values.length > this.max_entries){
-                this.values.pop();
+                if (this.values.length > this.max_entries) {
+                    this.values.pop();
+                }
+
+                this.updateGraph(this.values);
+                this.updateLatestEntry();
+            },
+
+            // updateGraph forces to update the D3 graph with the latest values
+            updateGraph: function(values) {
+                this.x.domain(d3.extent(values, function(d) {
+                    return d.x;
+                }));
+                this.y.domain([0, d3.max(values, function(d) {
+                    return d.y;
+                })]);
+
+                var svg = d3.select("#" + this.id).transition();
+                svg.select(".line")
+                    .duration(750)
+                    .attr("d", this.valueLine(values));
+                svg.select(".axis.axis--x")
+                    .duration(750)
+                    .call(this.xAxis);
+                svg.select(".axis.axis--y")
+                    .duration(750)
+                    .call(this.yAxis);
+            },
+
+            // handleResponse is the callback event for the observation request that is fired from getEntries()
+            handleResponse: function(data) {
+                if (this.rest_response === undefined) {
+                    return;
+                }
+
+                // Set values from response
+                this.values = [];
+                var values = this.values;
+                this.rest_response.value.forEach(function(entry) {
+                    values.push({
+                        "x": new Date(entry.phenomenonTime),
+                        "y": entry.result
+                    });
+                });
+
+                this.updateGraph(this.values);
+                this.updateLatestEntry();
+            },
+
+            // updateLatestEntry updates the properties latest_value, latest_date, latest_time from the newest observation entry
+            updateLatestEntry: function() {
+                if (this.values === undefined || this.values.length == 0) {
+                    return;
+                }
+
+                var latest = this.values[0];
+                var dt = new Date(latest.x);
+                this.latest_date = dt.getDate() + "-" + (dt.getMonth() + 1) + "-" + dt.getFullYear();
+                this.latest_time = this.formatTime(dt.getHours()) + ":" + this.formatTime(dt.getMinutes()) + ":" + this.formatTime(dt.getSeconds());
+                this.latest_value = latest.y;
+            },
+
+            // formatTime adds an extra 0 in front of a number if it's below 10
+            formatTime: function(time) {
+                return time < 10 ? "0" + time : "" + time;
+            },
+
+            // guid generates a random id, this is needed so set and update the right graph if multiple graphs are added to a page
+            guid: function() {
+                function s4() {
+                    return Math.floor((1 + Math.random()) * 0x10000)
+                        .toString(16)
+                        .substring(1);
+                }
+                return s4() + s4();
+            },
+
+            // getEntries retrieves latest observation entries from a SensorThings server based on sensor_things_url, datastream and max_entries
+            getEntries: function() {
+                this.$.get_entries.url = "http://" + this.sensor_things_url + "/v1.0/Datastreams(" + this.datastream + ")/Observations?$top=" + this.max_entries + "&$select=result,phenomenonTime";
+                this.$.get_entries.generateRequest();
+            },
+
+            // updateStyles changes the css styles if set from the HTML element
+            updateCssStyles: function() {
+                if (this.heading_color !== undefined) {
+                    this.customStyle['--headingColor'] = this.heading_color;
+                }
+                if (this.line_color !== undefined) {
+                    this.customStyle['--lineColor'] = this.line_color;
+                }
+                if (this.grid_color !== undefined) {
+                    this.customStyle['--gridColor'] = this.grid_color;
+                }
+                if (this.grid_text_color !== undefined) {
+                    this.customStyle['--gridTextColor'] = this.grid_text_color;
+                }
+                if (this.card_color !== undefined) {
+                    this.customStyle['--cardColor'] = this.card_color;
+                }
+                if (this.line_thickness !== undefined) {
+                    this.customStyle['--lineThickness'] = this.line_thickness;
+                }
+
+                Polymer.updateStyles();
+            },
+
+            attached: function() {
+                this.async(function() {
+                    this.updateCssStyles();
+                    this.createGraph();
+                    this.getEntries();
+                });
             }
-
-            this.updateGraph(this.values);
-            this.updateLatestEntry();
-        },
-
-        // updateGraph forces to update the D3 graph with the latest values
-        updateGraph: function(values) {
-            this.x.domain(d3.extent(values, function(d) { return d.x; }));
-	        this.y.domain([0, d3.max(values, function(d) { return d.y; })]);
-
-	        var svg = d3.select("#" + this.id).transition();
-	        svg.select(".line")
-                .duration(750)
-                .attr("d", this.valueLine(values));
-            svg.select(".axis.axis--x")
-                .duration(750)
-                .call(this.xAxis);
-            svg.select(".axis.axis--y")
-                .duration(750)
-                .call(this.yAxis);
-        },
-
-        // handleResponse is the callback event for the observation request that is fired from getEntries()
-        handleResponse: function (data) {
-            if(this.rest_response === undefined){
-                return;
-            }
-
-            // Set values from response
-            this.values = [];
-            var values = this.values;
-            this.rest_response.value.forEach(function(entry) {
-                values.push({ "x": new Date(entry.phenomenonTime), "y": entry.result});
-            });
-
-            this.updateGraph(this.values);
-            this.updateLatestEntry();
-        },
-
-        // updateLatestEntry updates the properties latest_value, latest_date, latest_time from the newest observation entry
-        updateLatestEntry: function(){
-            if(this.values === undefined || this.values.length == 0){
-                return;
-            }
-
-            var latest = this.values[0];
-            var dt = new Date(latest.x);
-            this.latest_date = dt.getDate() + "-" + (dt.getMonth() + 1)  + "-" + dt.getFullYear();
-            this.latest_time = this.formatTime(dt.getHours()) + ":" + this.formatTime(dt.getMinutes()) + ":" + this.formatTime(dt.getSeconds());
-            this.latest_value = latest.y;
-        },
-
-        // formatTime adds an extra 0 in front of a number if it's below 10
-        formatTime: function(time){
-            return time < 10 ? "0" + time : "" + time;
-        },
-
-        // guid generates a random id, this is needed so set and update the right graph if multiple graphs are added to a page
-        guid: function(){
-              function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                  .toString(16)
-                  .substring(1);
-              }
-              return s4() + s4();
-        },
-
-        // getEntries retrieves latest observation entries from a SensorThings server based on sensor_things_url, datastream and max_entries
-        getEntries: function(){
-            this.$.get_entries.url = "http://" + this.sensor_things_url + "/v1.0/Datastreams(" + this.datastream + ")/Observations?$top=" + this.max_entries + "&$select=result,phenomenonTime";
-            this.$.get_entries.generateRequest();
-        },
-
-        // updateStyles changes the css styles if set from the HTML element
-        updateCssStyles: function(){
-            if(this.heading_color !== undefined){
-                this.customStyle['--headingColor'] = this.heading_color;
-            }
-            if(this.line_color !== undefined){
-                this.customStyle['--lineColor'] = this.line_color;
-            }
-            if(this.grid_color !== undefined){
-                this.customStyle['--gridColor'] = this.grid_color;
-            }
-            if(this.grid_text_color !== undefined){
-                this.customStyle['--gridTextColor'] = this.grid_text_color;
-            }
-            if(this.card_color !== undefined){
-                this.customStyle['--cardColor'] = this.card_color;
-            }
-            if(this.line_thickness !== undefined){
-                this.customStyle['--lineThickness'] = this.line_thickness;
-            }
-
-            Polymer.updateStyles();
-        },
-
-        attached: function() {
-            this.async(function() {
-                this.updateCssStyles();
-                this.createGraph();
-                this.getEntries();
-           });
-        }
-    });
-</script>
+        });
+    </script>
 </dom-module>

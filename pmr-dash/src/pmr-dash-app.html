@@ -1,6 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-
 <link rel="import" href="view-3d.html">
 <link rel="import" href="dash-anne.html">
 <link rel="import" href="dash-anne-desk.html">
@@ -12,117 +11,99 @@
 <link rel="import" href="dash-alpr.html">
 <link rel="import" href="dash-frontcam.html">
 <link rel="import" href="dash-linegraph.html">
+<link rel="import" href="dash-openalpr.html">
 <dom-module id="pmr-dash-app">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
+    <template>
+      <style>
+         :host {
+            display: block;
+         }
+         #content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-content: space-around;
+         }
+         .col {
+            flex: 1;
+         }
+      </style>
+      <paper-toolbar>
+         <div class="title">Sensor dingen dash</div>
+         <div class$="{{anne}}">Anne</div>
+         <div class$="{{henk}}">Henk</div>
+         <div class$="{{frans}}">Vrolijke Frans</div>
+      </paper-toolbar>
+      <div id="content" >
+         <div class="col md">
+            <dash-anne class="card" anne={{anne}}></dash-anne>
+            <dash-anne-desk class="card" anne-desk={{anne-desk}}></dash-anne-desk>
+            <view-3d class="card" id="view3d1"
+               zwaailicht=[[zwaailicht]]
+               fussbal=[[vierde]]
+               ></view-3d>
+         </div>
+         <div class="col sm">
+            <dash-linegraph class="card"
+               sensor_things_url="gost.geodan.nl"
+               datastream=3
+               max_entries=40
+               heading="PK TEMPERATURE"
+               heading_color="#dfdfdf"
+               value_symbol="°C"
+               line_thickness="2.1"
+               line_color="#d61151"
+               card_color="#1B4258"
+               grid_color="#153446"
+               grid_text_color="#88969E">
+            </dash-linegraph>
+            <dash-linegraph class="card"
+               sensor_things_url="gost.geodan.nl"
+               datastream=4
+               max_entries=30
+               heading="PK HUMIDITY"
+               heading_color="#dfdfdf"
+               value_symbol="%"
+               line_thickness="3"
+               line_color="#0080ff"
+               card_color="#990000"
+               grid_color="#00264c"
+               grid_text_color="#7fbfff">
+            </dash-linegraph>
+            <dash-linegraph class="card"
+               sensor_things_url="gost.geodan.nl"
+               datastream=6
+               max_entries=40
+               heading="PK CO2"
+               heading_color="#dfdfdf"
+               value_symbol=" PPM"
+               line_thickness="2.2"
+               line_color="#e53939"
+               card_color="#191919"
+               grid_color="#153446"
+               grid_text_color="#b22c2c">
+            </dash-linegraph>
+            <dash-openalpr class="card" heading="openalpr" datastream=55></dash-openalpr>
+         </div>
+         <div class="col sm">
+            <dash-frans class="card" frans={{frans}}></dash-frans>
+            <dash-alpr class="card" alpr={{alpr}}></dash-alpr>
+            <dash-frontcam class="card" frontcam={{frontcam}}></dash-frontcam>
+         </div>
+         <div class="col xs">
+            <dash-henk class="card"  henk={{henk}}></dash-henk>
+            <dash-vierde class="card" entity={{vierde}}></dash-vierde>
+            <dash-zwaailicht class="card" entity={{zwaailicht}}></dash-zwaailicht>
+            <dash-ibeacon class="card"></dash-ibeacon>
+         </div>
+      </div>
+   </template>
+    <script>
+        Polymer({
+            is: 'pmr-dash-app',
+            properties: {
 
-     
-      #content {
-        display: flex;
-        flex-wrap: wrap;
-         justify-content: space-between;
-          align-content: space-around;
-      }
-
-      .col {
-        flex: 1;
-       
-      }
-
-    </style>
-    <paper-toolbar>
-  <div class="title">Sensor dingen dash</div>
-  <div class$="{{anne}}">Anne</div>
-  <div class$="{{henk}}">Henk</div>
-  <div class$="{{frans}}">Vrolijke Frans</div>
-</paper-toolbar>
-
-<div id="content" >
-
-<div class="col md">
-<dash-anne class="card" anne={{anne}}></dash-anne>
-<dash-anne-desk class="card" anne-desk={{anne-desk}}></dash-anne-desk>
-<view-3d class="card" id="view3d1"
-      zwaailicht=[[zwaailicht]]
-      fussbal=[[vierde]]
-     ></view-3d>
-</div>
-<div class="col sm">
-    <dash-linegraph class="card"
-                    sensor_things_url="gost.geodan.nl"
-                    datastream=3
-                    max_entries=40
-                    heading="PK TEMPERATURE"
-                    heading_color="#dfdfdf"
-                    value_symbol="°C"
-                    line_thickness="2.1"
-                    line_color="#d61151"
-                    card_color="#1B4258"
-                    grid_color="#153446"
-                    grid_text_color="#88969E">
-    </dash-linegraph>
-
-    <dash-linegraph class="card"
-                    sensor_things_url="gost.geodan.nl"
-                    datastream=4
-                    max_entries=30
-                    heading="PK HUMIDITY"
-                    heading_color="#dfdfdf"
-                    value_symbol="%"
-                    line_thickness="3"
-                    line_color="#0080ff"
-                    card_color="#990000"
-                    grid_color="#00264c"
-                    grid_text_color="#7fbfff">
-    </dash-linegraph>
-
-    <dash-linegraph class="card"
-                    sensor_things_url="gost.geodan.nl"
-                    datastream=6
-                    max_entries=40
-                    heading="PK CO2"
-                    heading_color="#dfdfdf"
-                    value_symbol=" PPM"
-                    line_thickness="2.2"
-                    line_color="#e53939"
-                    card_color="#191919"
-                    grid_color="#153446"
-                    grid_text_color="#b22c2c">
-    </dash-linegraph>
-</div>
-<div class="col sm">
- <dash-frans class="card" frans={{frans}}></dash-frans>
- <dash-alpr class="card" alpr={{alpr}}></dash-alpr>
-  <dash-frontcam class="card" frontcam={{frontcam}}></dash-frontcam>
-
-</div>
-<div class="col xs">
-<dash-henk class="card"  henk={{henk}}></dash-henk>
-     <dash-vierde class="card" entity={{vierde}}></dash-vierde>
-      <dash-zwaailicht class="card" entity={{zwaailicht}}></dash-zwaailicht>
-        <dash-ibeacon class="card"></dash-ibeacon>
-
-</div>
-    
-    
-     
-   
-    
-    </div>
-  </template>
-
-  <script>
-    Polymer({
-
-      is: 'pmr-dash-app',
-
-      properties: {
-        
-      },
-
-    });
-  </script>
+            },
+        });
+    </script>
 </dom-module>

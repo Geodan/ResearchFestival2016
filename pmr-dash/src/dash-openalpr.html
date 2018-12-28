@@ -1,0 +1,64 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/mqtt-elements/mqtt-elements.html">
+<dom-module id="dash-openalpr">
+    <template>
+  <style>
+  paper-card {
+    width: 350px;
+    margin: 5px;
+  }
+  </style>
+    <mqtt-connection auto url="ws://gost.geodan.nl:9001">
+      <mqtt-subscription
+              topic=[[topic]]
+              number-of-messages="Infinity"
+              last-message="{{lastMessage}}"
+      ></mqtt-subscription>
+    </mqtt-connection>
+  <paper-card class="white" heading$="{{heading}}" >
+  <div class="card-content">
+    <div>[[lp]]</div>
+  </div>
+</paper-card>
+
+</template>
+    <script>
+        Polymer({
+            is: "dash-openalpr",
+            properties: {
+                lastMessage: {
+                    type: Object,
+                    notify: true,
+                    observer: '_messageChanged'
+                },
+                lp: {
+                    type: String,
+                    notify: true
+                },
+                datastream: {
+                    type: Number,
+                    observer: 'datastreamChanged'
+                },
+                heading: {
+                    type: String,
+                    notify: true
+                }
+            },
+            ready: function() {
+                this.lp = "";
+            },
+
+            // datastreamChanged is called when the user set a datastream id
+            datastreamChanged: function(id) {
+                this.topic = 'Datastreams(' + id + ')/Observations';
+            },
+
+            // newMessage receives the latest MQTT message containing a new observation
+            _messageChanged: function(msg) {
+                var data = JSON.parse(msg.parsedPayload);
+                this.lp = data.result.plate + " - " + data.result.confidence + "%";
+            }
+        });
+    </script>
+</dom-module>
